@@ -4,8 +4,27 @@
 #define STACK_USE_TCP
 #define STACK_USE_DNS
 #define STACK_CLIENT_MODE
+#ifndef TCP_PURPOSE_PUBNUB_CLIENT
 #define TCP_PURPOSE_PUBNUB_CLIENT 13 /* TODO: TCPSocketInitializer */
+#endif
 #include "TCPIP Stack/TCPIP.h"
+
+/* Maximum length of the HTTP buffer. This is a major component of the
+ * memory size of the whole pubnub context, but it is also an upper
+ * bound on URL-encoded form of published message, so if you need to
+ * construct big messages, you may need to raise this. */
+#ifndef PUBNUB_BUF_MAXLEN
+#define PUBNUB_BUF_MAXLEN 256
+#endif
+
+/* Maximum length of the HTTP reply. This buffer is dynamically allocated
+ * only when loading the reply from the network. */
+/* XXX: Replies of API calls longer than this will be discarded and instead,
+ * PNR_FORMAT_ERROR will be reported. Specifically, this may cause lost
+ * messages returned by subscribe if too many too large messages got queued. */
+#ifndef PUBNUB_REPLY_MAXLEN
+#define PUBNUB_REPLY_MAXLEN (4096-8)
+#endif
 
 /* The PubNub library is designed for cooperative multi-tasking as is the
  * standard in the PIC32 environment. You can have multiple pubnub contexts
@@ -36,13 +55,11 @@ struct pubnub;
 enum pubnub_res {
     /* Success. */
     PNR_OK,
-    /* Another method already in progress. (Will not retry.) */
-    PNR_OCCUPIED,
     /* Time out before the request has completed. */
     PNR_TIMEOUT,
-    /* Communication error. response is string object with the error. */
+    /* Communication error (network or HTTP response format). */
     PNR_IO_ERROR,
-    /* HTTP error. response contains number object with the status code. */
+    /* HTTP error. */
     PNR_HTTP_ERROR,
     /* Unexpected input in received JSON. */
     PNR_FORMAT_ERROR,
@@ -99,10 +116,11 @@ void pubnub_set_cipher_key(struct pubnub *p, const char *cipher_key);
 
 /* Publish the @message (in JSON format) on @channel. The response
  * will usually be just a success confirmation. Use NULL as cb if you
- * are not interested in result notification. */
+ * are not interested in result notification. The call itself returns
+ * false on immediate error (e.g. too long message). */
 typedef void (*pubnub_publish_cb)(struct pubnub *p, enum pubnub_res result,
         char *response, void *cb_data);
-void pubnub_publish(struct pubnub *p, const char *channel, const char *message,
+bool pubnub_publish(struct pubnub *p, const char *channel, const char *message,
         pubnub_publish_cb cb, void *cb_data);
 
 /* Subscribe to @channel. The response will be a JSON-formatted string
@@ -112,10 +130,16 @@ void pubnub_publish(struct pubnub *p, const char *channel, const char *message,
  * are returned.  The first call will typically just establish
  * the context and return immediately with an empty response array.
  * Usually, you would issue the subscribe request in a loop, i.e.
- * call another pubnub_subscribe() from your pubnub_subscribe() callback. */
+ * call another pubnub_subscribe() from your pubnub_subscribe() callback.
+ *
+ * Note that the @channel pointer here must stay valid throughout the
+ * subscribe call (until the callback). You can release it in the callback
+ * if you need to.
+ *
+ * The call itself returns false on immediate error. */
 typedef void (*pubnub_subscribe_cb)(struct pubnub *p, enum pubnub_res result,
-        char *channel, char *response, void *cb_data);
-void pubnub_subscribe(struct pubnub *p, const char *channel,
+        const char *channel, char *response, void *cb_data);
+bool pubnub_subscribe(struct pubnub *p, const char *channel,
         pubnub_subscribe_cb cb, void *cb_data);
 
 
@@ -129,10 +153,11 @@ struct pubnub {
     const char *publish_key, *subscribe_key;
     int timeout, sub_timeout;
     char origin[64];
-    char time_token[64];
+    char timetoken[64];
 
     /* API call state */
     void *cb, *cbdata;
+    const char *channel;
     void (*internal_cb)(struct pubnub *p, enum pubnub_res result);
     int com_timeout;
 
@@ -147,7 +172,7 @@ struct pubnub {
     } state;
     DWORD timer;
     TCP_SOCKET socket;
-    union { char url[256]; char line[256]; } http_buf;
+    union { char url[PUBNUB_BUF_MAXLEN]; char line[PUBNUB_BUF_MAXLEN]; } http_buf;
     BYTE http_substate; // PS_HTTP* internal state
     int http_buf_len;
     int http_content_length;

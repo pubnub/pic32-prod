@@ -10,12 +10,17 @@ pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key
     p->timeout = 5;
     p->sub_timeout = 10;
     pubnub_set_origin(p, "http://pubsub.pubnub.com/");
+    strcpy(p->timetoken, "0");
 }
 
 void
 pubnub_done(struct pubnub *p)
 {
-    /* TODO tear down network */
+    if (p->state != PS_IDLE)
+        TCPDisconnect(p->socket);
+    if (p->http_reply) {
+        free(p->http_reply); p->http_reply = NULL;
+    }
 }
 
 void
@@ -133,7 +138,8 @@ pubnub_update_recvreply(struct pubnub *p)
      * 0 first line (status code etc.)
      * 1 plain header
      * 2 plain header, chunked encoding detected
-     * 3 chunk size line */
+     * 3 chunk size line
+     * 4 body follows now (transient) */
     while (p->state == PS_HTTPREPLY && readylen > 0) {
         if (p->http_buf_len == sizeof (p->http_buf.line)) {
             /* Our buffer is already full and we did not extract a line.
@@ -143,55 +149,75 @@ pubnub_update_recvreply(struct pubnub *p)
         }
         int gotlen = TCPGetArray(p->socket,
                 p->http_buf.line + p->http_buf_len,
-                sizeof (p->http_buf.line) - p->http_buf_len);
+                sizeof(p->http_buf.line)-1 - p->http_buf_len);
         p->http_buf_len += gotlen;
         readylen -= gotlen;
 
+        p->http_buf.line[p->http_buf_len] = 0;
+        char *bufptr = p->http_buf.line;
         char *newline;
         while (p->state == PS_HTTPREPLY
-               && (newline = strstr(p->http_buf.line, "\r\n"))) {
+               && (newline = strstr(bufptr, "\r\n"))) {
             *newline = 0;
 
-            /* Empty line handling. */
-            if (newline - p->http_buf.line == 0) {
+            if (newline - bufptr == 0) {
+                /* Empty line handling. */
                 switch (p->http_substate) {
                     case 1: /* Content follows. */
-                        p->state = PS_PROCESS;
+                        p->http_substate = 4;
                         break;
                     case 2: /* Chunked encoding, another line
-                                     * with content length follows. */
+                             * with content length follows. */
                         p->http_substate = 3;
                         break;
                     case 0:
                     case 3: /* Error. */
+io_error:
                         TCPDisconnect(p->socket);
                         p->internal_cb(p, PNR_IO_ERROR);
                         p->state = PS_IDLE;
                         return; /* straight out */
                 }
-                if (p->http_substate == 1) {
-                    /* In case of Chunked encoding, another line
-                     * with content length follows. */
-                    p->http_substate = 2;
-                } else {
-                    /* Content follows. */
-                    p->state = PS_HTTPBODY;
-                    p->http_reply = NULL;
-                }
 
             } else if (p->http_substate == 0) {
                 /* An HTTP status line. */
-                /* TODO */
+                if (strncmp(bufptr, "HTTP/1.", 7) || !bufptr[7] || !bufptr[8])
+                    goto io_error;
+                int http_code = atoi(bufptr+9);
+                if (http_code / 100 != 2) {
+                    TCPDisconnect(p->socket);
+                    p->internal_cb(p, PNR_HTTP_ERROR);
+                    p->state = PS_IDLE;
+                    return;
+                }
+                p->http_substate = 1;
 
             } else if (p->http_substate < 3) {
                 /* An HTTP header line. */
-                /* TODO */
+                char h_chunked[] = "Transfer-Encoding: chunked";
+                char h_length[] = "Content-Length: ";
+                if (!strncmp(bufptr, h_chunked, sizeof(h_chunked)-1)) {
+                    p->http_substate = 2;
+
+                } else if (!strncmp(bufptr, h_length, sizeof(h_length)-1)) {
+                    p->http_content_length = atoi(bufptr + sizeof(h_length)-1);
+                }
 
             } else if (p->http_substate == 3) {
                 /* A chunk size line. */
-                /* TODO */
+                p->http_content_length = strtoul(bufptr, NULL, 16);
+                p->http_substate = 4;
             }
+
+            if (p->http_substate == 4) {
+                p->state = PS_HTTPBODY;
+                p->http_reply = NULL;
+            }
+
+            p->http_buf_len -= (newline+2 - bufptr);
+            bufptr = newline+2;
         }
+        memmove(p->http_buf.line, bufptr, p->http_buf_len + 1);
     }
 }
 
@@ -199,8 +225,13 @@ static void
 pubnub_update_recvbody(struct pubnub *p)
 {
     if (!p->http_reply) {
+        if (p->http_content_length > PUBNUB_REPLY_MAXLEN) {
+            /* Too large reply. Abort and report format error. */
+            p->internal_cb(p, PNR_FORMAT_ERROR);
+            goto error;
+        }
         p->http_reply = malloc(p->http_content_length);
-        if (p->http_buf_len < p->http_content_length)
+        if (p->http_buf_len > p->http_content_length)
             goto io_error;
         memcpy(p->http_reply, p->http_buf.line, p->http_buf_len);
         p->http_content_length -= p->http_buf_len;
@@ -214,6 +245,7 @@ pubnub_update_recvbody(struct pubnub *p)
         if (!TCPIsConnected(p->socket)) {
 io_error:
             p->internal_cb(p, PNR_IO_ERROR);
+error:
             p->state = PS_IDLE;
             p->http_substate = 0;
             free(p->http_reply); p->http_reply = NULL;
@@ -282,15 +314,112 @@ pubnub_update(struct pubnub *p)
 
 
 void
+pubnub_publish_icb(struct pubnub *p, enum pubnub_res result)
+{
+    ((pubnub_publish_cb) p->cb)(p, result, p->http_reply, p->cbdata);
+}
+
+bool
 pubnub_publish(struct pubnub *p, const char *channel, const char *message,
         pubnub_publish_cb cb, void *cb_data)
 {
-    /* TODO */
+    if (p->state != PS_IDLE)
+        return false;
+    p->http_reply = NULL;
+
+    p->http_buf_len = snprintf(p->http_buf.url, sizeof(p->http_buf.url),
+            "GET /publish/%s/%s/0/%s/0/", p->publish_key, p->subscribe_key,
+            channel);
+
+    const char *pmessage = message;
+    while (pmessage[0]) {
+        /* RFC 3986 Unreserved characters plus few
+         * safe reserved ones. */
+        size_t okspan = strspn(pmessage, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.~" ",=:;@[]");
+        if (okspan > 0) {
+            if (okspan > sizeof(p->http_buf.url)-1 - p->http_buf_len) {
+                p->http_buf_len = 0;
+                return false;
+            }
+            memcpy(&p->http_buf.url[p->http_buf_len], pmessage, okspan);
+            p->http_buf_len += okspan;
+            p->http_buf.url[p->http_buf_len] = 0;
+            pmessage += okspan;
+        }
+        if (pmessage[0]) {
+            /* %-encode a non-ok character. */
+            char enc[4] = {'%'};
+            enc[1] = "0123456789ABCDEF"[pmessage[0] / 16];
+            enc[2] = "0123456789ABCDEF"[pmessage[0] % 16];
+            if (3 > sizeof(p->http_buf.url)-1 - p->http_buf_len) {
+                p->http_buf_len = 0;
+                return false;
+            }
+            memcpy(&p->http_buf.url[p->http_buf_len], enc, 4);
+            p->http_buf_len += 3;
+            pmessage++;
+        }
+    }
+
+    p->cb = cb; p->cbdata = cb_data;
+    p->internal_cb = pubnub_publish_icb;
+    p->channel = channel;
+    pubnub_http_connect(p);
 }
 
+
 void
+pubnub_subscribe_icb(struct pubnub *p, enum pubnub_res result)
+{
+    if (result != PNR_OK) {
+error:
+        if (result == PNR_FORMAT_ERROR) {
+            /* In case of PubNub protocol error, abort an ongoing subscribe
+             * and start over. This means some messages were lost, but allows
+             * us to recover from bad situations, e.g. too many messages
+             * queued or unexpected problem caused by a particular message. */
+            strcpy(p->timetoken, "0");
+        }
+        ((pubnub_subscribe_cb) p->cb)(p, result, p->channel, p->http_reply, p->cbdata);
+        return;
+    }
+    char *reply = p->http_reply;
+    if (reply[0] != '[' || reply[p->http_content_length-1] != ']'
+        || reply[p->http_content_length-2] != '"') {
+        result = PNR_FORMAT_ERROR;
+        goto error;
+    }
+
+    /* Extract timetoken. */
+    reply[p->http_content_length-2] = 0;
+    int i;
+    for (i = p->http_content_length-3; i > 0; i--)
+        if (reply[i] == '"')
+            break;
+    if (!i || reply[i-1] != ',' || p->http_content_length-2 - (i+1) >= 64) {
+        result = PNR_FORMAT_ERROR;
+        goto error;
+    }
+    strcpy(p->timetoken, &reply[i+1]);
+    reply[i-1] = 0; // terminate the [] message array
+
+    /* Here, as @reply we pass only the [msg1,msg2,...] array. */
+    ((pubnub_subscribe_cb) p->cb)(p, PNR_OK, p->channel, reply+1, p->cbdata);
+}
+
+bool
 pubnub_subscribe(struct pubnub *p, const char *channel,
         pubnub_subscribe_cb cb, void *cb_data)
 {
-    /* TODO */
+    if (p->state != PS_IDLE)
+        return false;
+    p->http_reply = NULL;
+
+    p->http_buf_len = snprintf(p->http_buf.url, sizeof(p->http_buf.url),
+            "GET /subscribe/%s/%s/0/%s", p->subscribe_key,
+            channel, p->timetoken);
+
+    p->cb = cb; p->cbdata = cb_data;
+    p->internal_cb = pubnub_subscribe_icb;
+    pubnub_http_connect(p);
 }
