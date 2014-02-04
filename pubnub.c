@@ -1,4 +1,5 @@
 #include <stdbool.h>
+
 #include "pubnub.h"
 
 
@@ -82,10 +83,11 @@ pubnub_update_sendrequest(struct pubnub *p)
         return false;
 
     if (p->http_substate <= 0) {
-        ROM BYTE *s = (ROM BYTE *) "GET ";
-        if (TCPIsPutReady(p->socket) < strlen(s))
+#define S (ROM BYTE *) "GET "
+        if (TCPIsPutReady(p->socket) < sizeof(S)-1)
             return true;
-        TCPPutROMString(p->socket, s);
+        TCPPutROMString(p->socket, S);
+#undef S
         p->http_substate++;
     }
     if (p->http_substate <= 1) {
@@ -96,10 +98,11 @@ pubnub_update_sendrequest(struct pubnub *p)
         p->http_substate++;
     }
     if (p->http_substate <= 2) {
-        ROM BYTE *s = (ROM BYTE *) " HTTP/1.1\r\nHost: ";
-        if (TCPIsPutReady(p->socket) < strlen(s))
+#define S (ROM BYTE *) " HTTP/1.1\r\nHost: "
+        if (TCPIsPutReady(p->socket) < sizeof(S)-1)
             return true;
-        TCPPutROMString(p->socket, s);
+        TCPPutROMString(p->socket, S);
+#undef S
         p->http_substate++;
     }
     if (p->http_substate <= 3) {
@@ -110,10 +113,11 @@ pubnub_update_sendrequest(struct pubnub *p)
         p->http_substate++;
     }
     if (p->http_substate <= 4) {
-        ROM BYTE *s = (ROM BYTE *) "\r\nUser-Agent: PubNub-Arduino/1.0\r\nConnection: close\r\n\r\n";
-        if (TCPIsPutReady(p->socket) < strlen(s))
+#define S (ROM BYTE *) "\r\nUser-Agent: PubNub-Arduino/1.0\r\nConnection: close\r\n\r\n"
+        if (TCPIsPutReady(p->socket) < sizeof(S)-1)
             return true;
-        TCPPutROMString(p->socket, s);
+        TCPPutROMString(p->socket, S);
+#undef S
         p->state = PS_HTTPREPLY;
     }
     return true;
@@ -148,7 +152,7 @@ pubnub_update_recvreply(struct pubnub *p)
             p->http_buf_len = 0;
         }
         int gotlen = TCPGetArray(p->socket,
-                p->http_buf.line + p->http_buf_len,
+                (BYTE *) (p->http_buf.line + p->http_buf_len),
                 sizeof(p->http_buf.line)-1 - p->http_buf_len);
         p->http_buf_len += gotlen;
         readylen -= gotlen;
@@ -263,7 +267,7 @@ error:
             goto io_error;
 
         int gotlen = TCPGetArray(p->socket,
-                p->http_reply + p->http_buf_len,
+                (BYTE *) (p->http_reply + p->http_buf_len),
                 p->http_content_length - p->http_buf_len);
         p->http_buf_len += gotlen;
         p->http_content_length -= gotlen;
@@ -365,6 +369,7 @@ pubnub_publish(struct pubnub *p, const char *channel, const char *message,
     p->internal_cb = pubnub_publish_icb;
     p->channel = channel;
     pubnub_http_connect(p);
+    return true;
 }
 
 
@@ -422,4 +427,5 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
     p->cb = cb; p->cbdata = cb_data;
     p->internal_cb = pubnub_subscribe_icb;
     pubnub_http_connect(p);
+    return true;
 }
