@@ -320,7 +320,8 @@ pubnub_update(struct pubnub *p)
 void
 pubnub_publish_icb(struct pubnub *p, enum pubnub_res result)
 {
-    ((pubnub_publish_cb) p->cb)(p, result, p->http_reply, p->cbdata);
+    if (p->cb)
+        ((pubnub_publish_cb) p->cb)(p, result, p->http_reply, p->cbdata);
 }
 
 bool
@@ -385,7 +386,8 @@ error:
              * queued or unexpected problem caused by a particular message. */
             strcpy(p->timetoken, "0");
         }
-        ((pubnub_subscribe_cb) p->cb)(p, result, p->channel, p->http_reply, p->cbdata);
+        if (p->cb)
+            ((pubnub_subscribe_cb) p->cb)(p, result, p->channel, p->http_reply, p->cbdata);
         return;
     }
     char *reply = p->http_reply;
@@ -409,7 +411,8 @@ error:
     reply[i-1] = 0; // terminate the [] message array
 
     /* Here, as @reply we pass only the [msg1,msg2,...] array. */
-    ((pubnub_subscribe_cb) p->cb)(p, PNR_OK, p->channel, reply+1, p->cbdata);
+    if (p->cb)
+        ((pubnub_subscribe_cb) p->cb)(p, PNR_OK, p->channel, reply+1, p->cbdata);
 }
 
 bool
