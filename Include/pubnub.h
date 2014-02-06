@@ -1,18 +1,27 @@
 #ifndef PUBNUB__H
 #define	PUBNUB__H
 
+#ifndef STACK_USE_TCP
 #define STACK_USE_TCP
-#define STACK_USE_DNS
-#define STACK_CLIENT_MODE
-#ifndef TCP_PURPOSE_PUBNUB_CLIENT
-#define TCP_PURPOSE_PUBNUB_CLIENT 13 /* TODO: TCPSocketInitializer */
 #endif
+#ifndef STACK_USE_DNS
+#define STACK_USE_DNS
+#endif
+#ifndef STACK_CLIENT_MODE
+#define STACK_CLIENT_MODE
+#endif
+#ifndef TCP_PURPOSE_PUBNUB_CLIENT
+#define TCP_PURPOSE_PUBNUB_CLIENT 13
+#endif
+#define PUBNUB_SOCKET_INITIALIZER {TCP_PURPOSE_PUBNUB_CLIENT, TCP_PIC_RAM, 256, 256},
 #include "TCPIP Stack/TCPIP.h"
 
 /* Maximum length of the HTTP buffer. This is a major component of the
  * memory size of the whole pubnub context, but it is also an upper
  * bound on URL-encoded form of published message, so if you need to
- * construct big messages, you may need to raise this. */
+ * construct big messages, you may need to raise this.  N.B. you also
+ * need to appropriately raise TX buffer size in PUBNUB_SOCKET_INITIALIZER
+ * above. */
 #ifndef PUBNUB_BUF_MAXLEN
 #define PUBNUB_BUF_MAXLEN 256
 #endif
