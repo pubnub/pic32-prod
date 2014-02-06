@@ -4,8 +4,8 @@ PubNub PIC32 Library
 To add PubNub support to your PIC application that uses the PIC TCP/IP stack:
 
   * Copy over the ``*.c`` and the ``Include/*.h`` files to your project.
-    Add these files to the "Source" and "Headers" sets respectively in the
-    MPLABX IDE.
+    Add these files to the "Source" and (that's optional) "Headers" sets
+    respectively in the MPLABX IDE.
 
   * In **Include/TCPIPConfig.h**, find the Application Options section (near
     the top) and at the *end* of this section, add:
@@ -16,8 +16,9 @@ To add PubNub support to your PIC application that uses the PIC TCP/IP stack:
 	#include "pubnubConfig.h"
 	#endif
 
-  * In the same file, find the definition of TCPSocketInitializer and at the
-    end of the initializer (before the closing bracket), insert a line
+  * (OPTIONAL) In the same file, find the definition of TCPSocketInitializer
+    and at the end of the initializer (before the closing bracket), insert
+    a line
 
 	PUBNUB_SOCKET_INITIALIZER
 
@@ -36,9 +37,13 @@ environment is a piece of cake!
 We will show you how to incorporate a simple PubNub demo (pubnubDemo.c)
 in an already made TCP/IP stack application.  To get started, add this to
 the "Demo App" provided by Microchip either as part of their TCP/IP stack
-or the PIC32 Ethernet Kit Demo:
+or the PIC32 Ethernet Kit Demo ("PIC32 ESK TCPIP Demo"):
 
-  * Follow the library setup instructions above:
+  * We assume you already have some demo app running, and the MPLABX IDE
+    and compiler set up.  A nice Linux howto for setting up the PIC32
+    Ethernet Kit Demo from scratch is at: http://jap.hu/electronic/pic32esk/
+
+  * First, follow the library setup instructions above.
 
   * At the top of your main file (**MainDemo.c** in Microchip's "Demo App"),
     after the ``#include "TCPIP Stack/TCPIP.h"`` line, add this code:
@@ -60,15 +65,20 @@ or the PIC32 Ethernet Kit Demo:
 	       PubnubDemoProcess();
 	#endif
 
-  * Build and upload. If LED 1 or 2 is lit, there was an error, look at
-    UART output. Otherwise, use demo/demo keys and watch the hello_world
-    channel - you should see a welcome message when the device starts
-    and you can send a message like
+  * Build and upload. If LED 1 or 2 is lit, there was an error. Otherwise,
+    use demo/demo keys and watch the hello_world channel - you should see
+    a welcome message when the device starts and you can send a message like
 
-	{"led":{"1":0}}
 	{"led":{"2":1}}
+	{"led":{"1":1}}
+	{"led":{"1":0}}
 
-to turn off the LED 1, then turn on LED 2.
+to turn on the LED 2, then turn on and back off LED 1. Blinking lights!
+
+  * If there was an error, to start debugging, place a breakpoint in the
+    error() function of pubnubDemo.c and go from there. Try to visit the
+    website provided by the PIC32 (just access it via HTTP) to verify its
+    network stack is all right.
 
 You can then use pubnubDemo.c as a base for your own usage of the PubNub
 cloud. Enjoy!
