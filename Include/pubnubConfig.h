@@ -1,0 +1,18 @@
+#ifndef PUBNUB__H
+#define	PUBNUB__H
+
+#ifndef STACK_USE_TCP
+#define STACK_USE_TCP
+#endif
+#ifndef STACK_USE_DNS
+#define STACK_USE_DNS
+#endif
+#ifndef STACK_CLIENT_MODE
+#define STACK_CLIENT_MODE
+#endif
+#ifndef TCP_PURPOSE_PUBNUB_CLIENT
+#define TCP_PURPOSE_PUBNUB_CLIENT 13
+#endif
+#define PUBNUB_SOCKET_INITIALIZER {TCP_PURPOSE_PUBNUB_CLIENT, TCP_PIC_RAM, 256, 256},
+
+#endif	/* PUBNUB__H */

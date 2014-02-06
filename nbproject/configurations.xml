@@ -5,6 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true">
 	   <itemPath>Include/pubnub.h</itemPath>
+	   <itemPath>Include/pubnubConfig.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
