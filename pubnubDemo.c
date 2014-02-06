@@ -41,11 +41,12 @@ error(int led, const char *ctx, enum pubnub_res result)
         "Communication error (network or HTTP response format).",
         "HTTP error.",
         "Unexpected input in received JSON.",
+        "Initial call failed."
     };
     putrsUART("\r\nPubNubDemo error ");
     putrsUART(ctx);
     putrsUART(": ");
-    putrsUART(errmsg[result]);
+    putrsUART(errmsg[result+1]);
     putrsUART("\r\n");
 #endif
     flip_led(led);
@@ -61,7 +62,7 @@ publish_cb(struct pubnub *p, enum pubnub_res result,
 
     /* Ok, now subscribe. */
     if (!pubnub_subscribe(&pn, channel, subscribe_cb, NULL))
-        error(2, "subscribe initial", 0);
+        error(2, "subscribe initial", 5);
 }
 
 static void
@@ -92,7 +93,7 @@ void
 PubnubDemoStart(void)
 {
     if (!pubnub_publish(&pn, channel, "\"\\\"Hello world!\\\" she said from the PIC.\"", publish_cb, NULL))
-        error(1, "publish initial", 0);
+        error(1, "publish initial", 5);
 }
 
 
