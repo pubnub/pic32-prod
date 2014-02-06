@@ -10,6 +10,25 @@ static const char channel[] = "hello_world";
 
 static struct pubnub pn;
 
+
+/* We have an internal state machine - if a timer is set,
+ * when it reaches completion, the action in PubnubDemoNext
+ * is executed. This is used to implement delayed start and
+ * delayed retry. */
+
+void PubnubDemoStart(void);
+void PubnubDemoSubscribe(void);
+void PubnubDemoResubscribe(void); // delayed subscirbe
+
+#define START_DELAY 10
+#define RESUB_DELAY 2 // TODO: Exponential backoff
+static DWORD timer;
+static enum PubnubDemoNext {
+    PDN_START,
+    PDN_SUBSCRIBE,
+} next;
+
+
 /* Some LED utility functions. */
 static void
 flip_led(int n)
@@ -52,6 +71,7 @@ error(int led, const char *ctx, enum pubnub_res result)
     flip_led(led);
 }
 
+
 static void subscribe_cb(struct pubnub *p, enum pubnub_res result, const char *channel, char *response, void *cb_data);
 static void
 publish_cb(struct pubnub *p, enum pubnub_res result,
@@ -61,8 +81,7 @@ publish_cb(struct pubnub *p, enum pubnub_res result,
         error(1, "publish", result);
 
     /* Ok, now subscribe. */
-    if (!pubnub_subscribe(&pn, channel, subscribe_cb, NULL))
-        error(2, "subscribe initial", 5);
+    PubnubDemoSubscribe();
 }
 
 static void
@@ -71,21 +90,25 @@ subscribe_cb(struct pubnub *p, enum pubnub_res result,
 {
     if (result == PNR_TIMEOUT) {
         /* Nothing happenned, just retry to stay tuned. */
-        goto subscribe_again;
+        PubnubDemoSubscribe();
+        return;
     }
     if (result != PNR_OK) {
         error(2, "subscribe", result);
+        PubnubDemoResubscribe(); // delayed retry
         return;
     }
 
+    /* XXX: The following pattern does not take into account a situation
+     * when we get multiple messages at once in the [] array, which is
+     * entirely possible. */
     int ledno, ledval;
-    if (sscanf(response, "{\"led\":{\"%d\":%d}}", &ledno, &ledval) == 2) {
+    if (sscanf(response, "[{\"led\":{\"%d\":%d}}]", &ledno, &ledval) == 2) {
         /* Switch the given LED. */
         set_led(ledno, ledval);
     }
 
-subscribe_again:
-    pubnub_subscribe(&pn, channel, subscribe_cb, NULL);
+    PubnubDemoSubscribe();
 }
 
 
@@ -96,9 +119,23 @@ PubnubDemoStart(void)
         error(1, "publish initial", 5);
 }
 
+void
+PubnubDemoSubscribe(void)
+{
+    if (!pubnub_subscribe(&pn, channel, subscribe_cb, NULL)) {
+        error(2, "subscribe initial", 5);
+        PubnubDemoResubscribe();
+    }
+}
 
-#define START_DELAY 10
-static DWORD timer;
+void
+PubnubDemoResubscribe(void)
+{
+    /* Set a delayed retry. */
+    next = PDN_SUBSCRIBE;
+    timer = TickGet() + START_DELAY * TICK_SECOND;
+}
+
 
 void
 PubnubDemoInit(void)
@@ -110,15 +147,20 @@ PubnubDemoInit(void)
      * DHCP address configuration still ongoing etc.). We will
      * therefore perform a delayed call of PubnubDemoStart()
      * after START_DELAY seconds. */
-    timer = TickGet();
+    next = PDN_START;
+    timer = TickGet() + START_DELAY * TICK_SECOND;
 }
 
 void PubnubDemoProcess(void)
 {
-    if (timer != 0 && TickGet() - timer > START_DELAY * TICK_SECOND) {
-        timer = 0;
-        PubnubDemoStart();
-    }
-
     pubnub_update(&pn);
+
+    /* XXX: What if the timer overflows? */
+    if (timer != 0 && timer > TickGet()) {
+        timer = 0;
+        switch (next) {
+            case PDN_START: PubnubDemoStart(); break;
+            case PDN_SUBSCRIBE: PubnubDemoSubscribe(); break;
+        }
+    }
 }
