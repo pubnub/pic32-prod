@@ -10,6 +10,26 @@ static const char channel[] = "hello_world";
 
 static struct pubnub pn;
 
+/* Some LED utility functions. */
+static void
+flip_led(int n)
+{
+    switch (n) {
+        case 0: LED0_IO ^= 1; break;
+        case 1: LED1_IO ^= 1; break;
+        case 2: LED2_IO ^= 1; break;
+    }
+}
+static void
+set_led(int n, int s)
+{
+    switch (n) {
+        case 0: LED0_IO = s; break;
+        case 1: LED1_IO = s; break;
+        case 2: LED2_IO = s; break;
+    }
+}
+
 /* Print error() to UART and switch a given LED to indicate error. */
 static void
 error(int led, const char *ctx, enum pubnub_res result)
@@ -28,8 +48,7 @@ error(int led, const char *ctx, enum pubnub_res result)
     putrsUART(errmsg[result]);
     putrsUART("\r\n");
 #endif
-
-    LED0_IO ^= 1<<led;
+    flip_led(led);
 }
 
 static void subscribe_cb(struct pubnub *p, enum pubnub_res result, const char *channel, char *response, void *cb_data);
@@ -61,8 +80,7 @@ subscribe_cb(struct pubnub *p, enum pubnub_res result,
     int ledno, ledval;
     if (sscanf(response, "{\"led\":{\"%d\":%d}}", &ledno, &ledval) == 2) {
         /* Switch the given LED. */
-        LED0_IO &= ~(1 << ledno);
-        LED0_IO |= (ledval&1) << ledno;
+        set_led(ledno, ledval);
     }
 
 subscribe_again:
