@@ -70,8 +70,10 @@ PubnubDemoInit(void)
 {
     pubnub_init(&pn, pubkey, subkey);
 
-    pubnub_publish(&pn, channel, "\"\\\"Hello world!\\\" she said from the PIC.\"", publish_cb, NULL);
-    pubnub_subscribe(&pn, channel, subscribe_cb, NULL);
+    if (!pubnub_publish(&pn, channel, "\"\\\"Hello world!\\\" she said from the PIC.\"", publish_cb, NULL))
+        error(1, "publish initial", 0);
+    if (!pubnub_subscribe(&pn, channel, subscribe_cb, NULL))
+        error(2, "subscribe initial", 0);
 }
 
 void PubnubDemoProcess(void)
