@@ -32,12 +32,17 @@ error(int led, const char *ctx, enum pubnub_res result)
     LED0_IO ^= 1<<led;
 }
 
+static void subscribe_cb(struct pubnub *p, enum pubnub_res result, const char *channel, char *response, void *cb_data);
 static void
 publish_cb(struct pubnub *p, enum pubnub_res result,
         char *response, void *cb_data)
 {
     if (result != PNR_OK)
         error(1, "publish", result);
+
+    /* Ok, now subscribe. */
+    if (!pubnub_subscribe(&pn, channel, subscribe_cb, NULL))
+        error(2, "subscribe initial", 0);
 }
 
 static void
@@ -72,8 +77,6 @@ PubnubDemoInit(void)
 
     if (!pubnub_publish(&pn, channel, "\"\\\"Hello world!\\\" she said from the PIC.\"", publish_cb, NULL))
         error(1, "publish initial", 0);
-    if (!pubnub_subscribe(&pn, channel, subscribe_cb, NULL))
-        error(2, "subscribe initial", 0);
 }
 
 void PubnubDemoProcess(void)
