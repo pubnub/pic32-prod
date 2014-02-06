@@ -119,6 +119,7 @@ pubnub_update_sendrequest(struct pubnub *p)
         TCPPutROMString(p->socket, S);
 #undef S
         p->state = PS_HTTPREPLY;
+        p->http_substate = 0;
     }
     return true;
 }
