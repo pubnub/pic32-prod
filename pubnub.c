@@ -73,6 +73,7 @@ pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result)
 
     if (p->socket != INVALID_SOCKET) {
         TCPDisconnect(p->socket);
+        TCPDisconnect(p->socket); // we need to reuse the socket, RST!
         p->socket = INVALID_SOCKET;
     }
 
