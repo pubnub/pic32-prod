@@ -156,7 +156,7 @@ struct pubnub {
     /* API call state */
     void *cb, *cbdata;
     const char *channel;
-    void (*internal_cb)(struct pubnub *p, enum pubnub_res result, char *reply, int replylen, void *cb, void *cbdata);
+    void (*internal_cb)(struct pubnub *p, enum pubnub_res result, char *reply, void *cb, void *cbdata);
     int com_timeout;
 
     /* Network communication state */

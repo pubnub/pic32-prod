@@ -78,12 +78,10 @@ pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result)
 
     char *http_reply = p->http_reply;
     p->http_reply = NULL;
-    int replylen = p->http_content_length;
-    p->http_content_length = 0;
     void *cb = p->cb, *cbdata = p->cbdata;
     p->cb = p->cbdata = NULL;
 
-    p->internal_cb(p, result, http_reply, replylen, cb, cbdata);
+    p->internal_cb(p, result, http_reply, cb, cbdata);
 
     if (http_reply)
         free(http_reply);
@@ -334,7 +332,7 @@ pubnub_update(struct pubnub *p)
 
 
 void
-pubnub_publish_icb(struct pubnub *p, enum pubnub_res result, char *reply, int replylen, void *cb, void *cbdata)
+pubnub_publish_icb(struct pubnub *p, enum pubnub_res result, char *reply, void *cb, void *cbdata)
 {
     if (cb)
         ((pubnub_publish_cb) cb)(p, result, reply, cbdata);
@@ -392,7 +390,7 @@ pubnub_publish(struct pubnub *p, const char *channel, const char *message,
 
 
 void
-pubnub_subscribe_icb(struct pubnub *p, enum pubnub_res result, char *reply, int replylen, void *cb, void *cbdata)
+pubnub_subscribe_icb(struct pubnub *p, enum pubnub_res result, char *reply, void *cb, void *cbdata)
 {
     if (result != PNR_OK) {
 error:
@@ -407,6 +405,7 @@ error:
             ((pubnub_subscribe_cb) cb)(p, result, p->channel, reply, cbdata);
         return;
     }
+    int replylen = strlen(reply);
     if (reply[0] != '[' || reply[replylen-1] != ']'
         || reply[replylen-2] != '"') {
         result = PNR_FORMAT_ERROR;
