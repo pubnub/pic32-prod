@@ -89,15 +89,35 @@ subscribe_again:
 
 
 void
-PubnubDemoInit(void)
+PubnubDemoStart(void)
 {
-    pubnub_init(&pn, pubkey, subkey);
-
     if (!pubnub_publish(&pn, channel, "\"\\\"Hello world!\\\" she said from the PIC.\"", publish_cb, NULL))
         error(1, "publish initial", 0);
 }
 
+
+#define START_DELAY 10
+static DWORD timer;
+
+void
+PubnubDemoInit(void)
+{
+    pubnub_init(&pn, pubkey, subkey);
+
+    /* We will not do a pubnub call right away as the network
+     * may not be configured properly at this moment yet (e.g.
+     * DHCP address configuration still ongoing etc.). We will
+     * therefore perform a delayed call of PubnubDemoStart()
+     * after START_DELAY seconds. */
+    timer = TickGet();
+}
+
 void PubnubDemoProcess(void)
 {
+    if (timer != 0 && TickGet() - timer > START_DELAY * TICK_SECOND) {
+        timer = 0;
+        PubnubDemoStart();
+    }
+
     pubnub_update(&pn);
 }
