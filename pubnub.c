@@ -369,6 +369,7 @@ pubnub_publish(struct pubnub *p, const char *channel, const char *message,
     p->cb = cb; p->cbdata = cb_data;
     p->internal_cb = pubnub_publish_icb;
     p->channel = channel;
+    p->com_timeout = p->timeout;
     return pubnub_http_connect(p);
 }
 
@@ -428,5 +429,6 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
 
     p->cb = cb; p->cbdata = cb_data;
     p->internal_cb = pubnub_subscribe_icb;
+    p->com_timeout = p->sub_timeout;
     return pubnub_http_connect(p);
 }
