@@ -334,7 +334,7 @@ pubnub_publish(struct pubnub *p, const char *channel, const char *message,
     p->http_reply = NULL;
 
     p->http_buf_len = snprintf(p->http_buf.url, sizeof(p->http_buf.url),
-            "GET /publish/%s/%s/0/%s/0/", p->publish_key, p->subscribe_key,
+            "/publish/%s/%s/0/%s/0/", p->publish_key, p->subscribe_key,
             channel);
 
     const char *pmessage = message;
@@ -425,7 +425,7 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
     p->http_reply = NULL;
 
     p->http_buf_len = snprintf(p->http_buf.url, sizeof(p->http_buf.url),
-            "GET /subscribe/%s/%s/0/%s", p->subscribe_key,
+            "/subscribe/%s/%s/0/%s", p->subscribe_key,
             channel, p->timetoken);
 
     p->cb = cb; p->cbdata = cb_data;
