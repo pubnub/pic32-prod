@@ -1,6 +1,8 @@
 #ifndef PUBNUB__H
 #define	PUBNUB__H
 
+#include <stdbool.h>
+
 #include "TCPIP Stack/TCPIP.h"
 
 /* Maximum length of the HTTP buffer. This is a major component of the
