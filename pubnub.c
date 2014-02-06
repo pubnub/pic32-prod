@@ -252,6 +252,7 @@ pubnub_update_recvbody(struct pubnub *p)
 io_error:
             p->internal_cb(p, PNR_IO_ERROR);
 error:
+            TCPDisconnect(p->socket);
             p->state = PS_IDLE;
             p->http_substate = 0;
             free(p->http_reply); p->http_reply = NULL;
@@ -313,6 +314,7 @@ pubnub_update(struct pubnub *p)
         case PS_PROCESS:
             p->internal_cb(p, PNR_OK);
             free(p->http_reply); p->http_reply = NULL;
+            TCPDisconnect(p->socket);
             p->state = PS_IDLE;
             break;
     }
