@@ -90,7 +90,7 @@ void pubnub_done(struct pubnub *p);
 void pubnub_set_origin(struct pubnub *p, const char *origin);
 
 /* Set the timeout for API requests execution (except subscribe),
- * in seconds. Default: 5s */
+ * in seconds. Default: 10s */
 void pubnub_set_timeout(struct pubnub *p, int timeout);
 
 /* Set the timeout for subscribe execution, in seconds. Default: 310s */

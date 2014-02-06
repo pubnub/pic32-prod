@@ -8,8 +8,8 @@ pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key
 {
     p->publish_key = publish_key;
     p->subscribe_key = subscribe_key;
-    p->timeout = 5;
-    p->sub_timeout = 10;
+    p->timeout = 10;
+    p->sub_timeout = 310;
     pubnub_set_origin(p, "http://pubsub.pubnub.com/");
     strcpy(p->timetoken, "0");
 }
