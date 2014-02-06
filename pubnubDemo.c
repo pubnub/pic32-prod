@@ -54,7 +54,7 @@ subscribe_cb(struct pubnub *p, enum pubnub_res result,
     }
 
     int ledno, ledval;
-    if (sscanf(response, "{\"led\":{%d:%d}}", &ledno, &ledval) == 2) {
+    if (sscanf(response, "{\"led\":{\"%d\":%d}}", &ledno, &ledval) == 2) {
         /* Switch the given LED. */
         LED0_IO &= ~(1 << ledno);
         LED0_IO |= (ledval&1) << ledno;

@@ -65,10 +65,10 @@ or the PIC32 Ethernet Kit Demo:
     channel - you should see a welcome message when the device starts
     and you can send a message like
 
-	{"led":{0:1}}
-	{"led":{0:0}}
+	{"led":{"1":0}}
+	{"led":{"2":1}}
 
-to turn on the LED 0 and then turn it off again.
+to turn off the LED 1, then turn on LED 2.
 
 You can then use pubnubDemo.c as a base for your own usage of the PubNub
 cloud. Enjoy!
