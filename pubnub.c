@@ -242,6 +242,7 @@ pubnub_update_recvbody(struct pubnub *p)
     }
     if (p->http_content_length == 0) {
         p->state = PS_PROCESS;
+	return;
     }
 
     int readylen = TCPIsGetReady(p->socket);
