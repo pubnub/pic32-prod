@@ -138,7 +138,7 @@ pubnub_update_sendrequest(struct pubnub *p)
         p->http_substate++;
     }
     if (p->http_substate <= 4) {
-#define S (ROM BYTE *) "\r\nUser-Agent: PubNub-Arduino/1.0\r\nConnection: close\r\n\r\n"
+#define S (ROM BYTE *) "\r\nUser-Agent: PubNub-PIC32/0.1\r\nConnection: close\r\n\r\n"
         if (TCPIsPutReady(p->socket) < sizeof(S)-1)
             return true;
         TCPPutROMString(p->socket, S);
