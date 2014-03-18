@@ -172,8 +172,8 @@ struct pubnub {
     TCP_SOCKET socket;
     union { char url[PUBNUB_BUF_MAXLEN]; char line[PUBNUB_BUF_MAXLEN]; } http_buf;
     BYTE http_substate; // PS_HTTP* internal state
-    int http_buf_len;
-    int http_content_length;
+    unsigned http_buf_len;
+    unsigned http_content_length;
     char *http_reply;
 };
 
