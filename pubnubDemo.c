@@ -103,7 +103,7 @@ subscribe_cb(struct pubnub *p, enum pubnub_res result,
      * when we get multiple messages at once in the [] array, which is
      * entirely possible. */
     int ledno, ledval;
-    if (sscanf(response, "[{\"led\":{\"%d\":%d}}]", &ledno, &ledval) == 2) {
+    if (sscanf(response, "{\"led\":{\"%d\":%d}}", &ledno, &ledval) == 2) {
         /* Switch the given LED. */
         set_led(ledno, ledval);
     }

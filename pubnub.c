@@ -3,6 +3,39 @@
 #include "pubnub.h"
 
 
+/* Split a JSON array (with arbitrary contents) to multiple NUL-terminated
+ * C strings. */
+static bool
+split_array(char *buf, int len)
+{
+    bool escaped = false, in_string = false;
+    int bracket_level = 0;
+    for (int i = 0; i < len; i++) {
+        if (escaped) {
+            escaped = false;
+        } else if (in_string) {
+            switch (buf[i]) {
+                case '\\': escaped = true; break;
+                case '"': in_string = false; break;
+                default: break;
+            }
+        } else {
+            switch (buf[i]) {
+                case '"': in_string = true; break;
+                case '[': case '{': bracket_level++; break;
+                case ']': case '}': bracket_level--; break;
+                /* if at root, split! */
+                case ',': if (bracket_level == 0) buf[i] = 0; break;
+                default: break;
+            }
+        }
+    }
+    if (escaped || in_string || bracket_level > 0)
+        return false;
+    return true;
+}
+
+
 void
 pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key)
 {
@@ -426,12 +459,34 @@ error:
         goto error;
     }
     strcpy(p->timetoken, &reply[i+1]);
-    reply[i-1] = 0; // terminate the [] message array
+    reply[i-2] = 0; // terminate the [] message array (before the ]!)
 
-    /* Here, as @reply we pass only the [msg1,msg2,...] array. */
+    /* As a special case, restart the subscribe if we are dealing
+     * with an empty reply. */
+    if (i-2 == 2) {
+        free(reply);
+        if (!pubnub_subscribe(p, p->channel, cb, cbdata) && cb)
+            ((pubnub_subscribe_cb) cb)(p, PNR_IO_ERROR, p->channel, NULL, cbdata);
+        return;
+    }
+
+    /* Shrink the reply buffer to contain just the array contents. */
+    p->http_buf_len = i-2-1;
+    memmove(reply, reply + 2, p->http_buf_len);
+    p->http_reply = reply = realloc(reply, p->http_buf_len);
+
+    /* Now, chop the reply buffer to individual strings corresponding
+     * to array contents. */
+    if (!split_array(p->http_reply, p->http_buf_len)) {
+        p->http_reply = NULL;
+        if (cb)
+            ((pubnub_subscribe_cb) cb)(p, PNR_FORMAT_ERROR, p->channel, reply, cbdata);
+        free(reply);
+    }
+
+    /* Returning the reply here means returning the first component. */
     if (cb)
-        ((pubnub_subscribe_cb) cb)(p, PNR_OK, p->channel, reply+1, cbdata);
-    free(reply);
+        ((pubnub_subscribe_cb) cb)(p, PNR_OK, p->channel, reply, cbdata);
 }
 
 bool
@@ -440,9 +495,30 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
 {
     if (p->state != PS_IDLE)
         return false;
+
+    if (p->http_reply && !strcmp(p->channel, channel)) {
+        int prevlen = strlen(p->http_reply);
+        if (prevlen < p->http_buf_len) {
+            /* Next message from stash-away buffer. */
+            /* XXX: We can be either memory-frugal or CPU-frugal
+             * here. We choose to be memory-frugal by copying
+             * over messages many times, but we may want to make
+             * this configurable. */
+            p->http_buf_len -= prevlen + 1;
+            memmove(p->http_reply, p->http_reply + prevlen + 1, p->http_buf_len);
+            p->http_reply = (char *) realloc(p->http_reply, p->http_buf_len);
+            if (cb)
+                cb(p, PNR_OK, p->channel, p->http_reply, cb_data);
+            return true;
+        }
+        /* That's all. free() below and fetch new messages. */
+    }
+
     if (p->http_reply)
         free(p->http_reply);
     p->http_reply = NULL;
+    p->http_buf_len = 0;
+
     p->http_content_length = 0;
 
     p->http_buf_len = snprintf(p->http_buf.url, sizeof(p->http_buf.url),

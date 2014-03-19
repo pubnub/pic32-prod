@@ -125,14 +125,22 @@ bool pubnub_publish(struct pubnub *p, const char *channel, const char *message,
  * with an array that has one received message per item.
  *
  * Messages published on @channel since the last subscribe call
- * are returned.  The first call will typically just establish
- * the context and return immediately with an empty response array.
- * Usually, you would issue the subscribe request in a loop, i.e.
- * call another pubnub_subscribe() from your pubnub_subscribe() callback.
+ * are returned.  One message is returned at a time; sometimes, retrieving
+ * a single message may correspond to several HTTP requests, sometimes
+ * a single request will yield many messages; a callback will always
+ * be called only for a single message at a time. Usually, you would issue
+ * the subscribe request in a loop, i.e. call another pubnub_subscribe()
+ * from your pubnub_subscribe() callback.
  *
  * Note that the @channel pointer here must stay valid throughout the
  * subscribe call (until the callback). You can release it in the callback
  * if you need to.
+ *
+ * Also note that some of the subscribed messages may be lost when
+ * calling publish() after a subscribe() on the same context or
+ * subscribe() on different channels in turn on the same context.
+ * But typically, you will want two separate contexts for publish and
+ * subscribe anyway.
  *
  * The call itself returns false on immediate error. */
 typedef void (*pubnub_subscribe_cb)(struct pubnub *p, enum pubnub_res result,
