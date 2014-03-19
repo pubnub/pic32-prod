@@ -407,6 +407,8 @@ error:
         return;
     }
     int replylen = strlen(reply);
+    if (reply[replylen-1] != ']' && replylen > 2)
+        replylen -= 2; // XXX: this seems required by Manxiang
     if (reply[0] != '[' || reply[replylen-1] != ']'
         || reply[replylen-2] != '"') {
         result = PNR_FORMAT_ERROR;
