@@ -83,9 +83,6 @@ pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result)
     p->cb = p->cbdata = NULL;
 
     p->internal_cb(p, result, http_reply, cb, cbdata);
-
-    if (http_reply)
-        free(http_reply);
 }
 
 static bool
@@ -337,6 +334,7 @@ pubnub_publish_icb(struct pubnub *p, enum pubnub_res result, char *reply, void *
 {
     if (cb)
         ((pubnub_publish_cb) cb)(p, result, reply, cbdata);
+    free(reply);
 }
 
 bool
@@ -431,6 +429,7 @@ error:
     /* Here, as @reply we pass only the [msg1,msg2,...] array. */
     if (cb)
         ((pubnub_subscribe_cb) cb)(p, PNR_OK, p->channel, reply+1, cbdata);
+    free(reply);
 }
 
 bool
