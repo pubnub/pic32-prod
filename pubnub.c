@@ -10,7 +10,8 @@ split_array(char *buf, int len)
 {
     bool escaped = false, in_string = false;
     int bracket_level = 0;
-    for (int i = 0; i < len; i++) {
+    int i;
+    for (i = 0; i < len; i++) {
         if (escaped) {
             escaped = false;
         } else if (in_string) {
