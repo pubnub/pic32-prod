@@ -498,15 +498,15 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
         return false;
 
     if (p->http_reply && !strcmp(p->channel, channel)) {
-        int prevlen = strlen(p->http_reply);
+        int prevlen = strlen(p->http_reply) + 1;
         if (prevlen < p->http_buf_len) {
             /* Next message from stash-away buffer. */
             /* XXX: We can be either memory-frugal or CPU-frugal
              * here. We choose to be memory-frugal by copying
              * over messages many times, but we may want to make
              * this configurable. */
-            p->http_buf_len -= prevlen + 1;
-            memmove(p->http_reply, p->http_reply + prevlen + 1, p->http_buf_len);
+            p->http_buf_len -= prevlen;
+            memmove(p->http_reply, p->http_reply + prevlen, p->http_buf_len);
             p->http_reply = (char *) realloc(p->http_reply, p->http_buf_len);
             if (cb)
                 cb(p, PNR_OK, p->channel, p->http_reply, cb_data);
