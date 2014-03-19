@@ -343,6 +343,8 @@ pubnub_publish(struct pubnub *p, const char *channel, const char *message,
 {
     if (p->state != PS_IDLE)
         return false;
+    if (p->http_reply)
+        free(p->http_reply);
     p->http_reply = NULL;
     p->http_content_length = 0;
 
@@ -438,6 +440,8 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
 {
     if (p->state != PS_IDLE)
         return false;
+    if (p->http_reply)
+        free(p->http_reply);
     p->http_reply = NULL;
     p->http_content_length = 0;
 
