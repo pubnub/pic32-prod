@@ -528,6 +528,7 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
 
     p->cb = cb; p->cbdata = cb_data;
     p->internal_cb = pubnub_subscribe_icb;
+    p->channel = channel;
     p->com_timeout = p->sub_timeout;
     return pubnub_http_connect(p);
 }
