@@ -285,7 +285,7 @@ pubnub_update_recvbody(struct pubnub *p)
             pubnub_callback_and_idle(p, PNR_FORMAT_ERROR);
             return;
         }
-        p->http_reply = malloc(p->http_content_length);
+        p->http_reply = malloc(p->http_content_length+1);
         if (p->http_buf_len > p->http_content_length)
             goto io_error;
         memcpy(p->http_reply, p->http_buf.line, p->http_buf_len);
