@@ -292,6 +292,7 @@ pubnub_update_recvbody(struct pubnub *p)
         p->http_content_length -= p->http_buf_len;
     }
     if (p->http_content_length == 0) {
+        p->http_reply[p->http_buf_len] = 0;
         p->state = PS_PROCESS;
 	return;
     }
@@ -322,8 +323,10 @@ io_error:
         readylen -= gotlen;
     }
 
-    if (p->http_content_length == 0)
+    if (p->http_content_length == 0) {
+        p->http_reply[p->http_buf_len] = 0;
         p->state = PS_PROCESS;
+    }
 }
 
 void
