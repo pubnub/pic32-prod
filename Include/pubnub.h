@@ -24,6 +24,13 @@
 #define PUBNUB_REPLY_MAXLEN (4096-8)
 #endif
 
+/* If #defined, the PubNub implementation will not try to catch-up on
+ * messages it could miss while subscribe() failed with an IO error or such.
+ * Use this if missing some messages is not a problem. */
+/* Note that messages may be sometimes lost anyway due to potential
+ * PUBNUB_REPLY_MAXLEN overrun described above. */
+#define PUBNUB_MISSMSG_OK 1
+
 /* The PubNub library is designed for cooperative multi-tasking as is the
  * standard in the PIC32 environment. You can have multiple pubnub contexts
  * established; in each context, up to one API call may be ongoing (typically

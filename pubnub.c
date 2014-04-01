@@ -439,7 +439,11 @@ pubnub_subscribe_icb(struct pubnub *p, enum pubnub_res result, char *reply, void
 {
     if (result != PNR_OK) {
 error:
+#ifdef PUBNUB_MISSMSG_OK
+	if (1) {
+#else
         if (result == PNR_FORMAT_ERROR) {
+#endif
             /* In case of PubNub protocol error, abort an ongoing subscribe
              * and start over. This means some messages were lost, but allows
              * us to recover from bad situations, e.g. too many messages
