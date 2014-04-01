@@ -107,6 +107,10 @@ void pubnub_set_secret_key(struct pubnub *p, const char *secret_key);
 /* TODO */
 void pubnub_set_cipher_key(struct pubnub *p, const char *cipher_key);
 
+/* Set the UUID identification of PubNub client. Pass NULL to unset.
+ * The string is not copied over. */
+void pubnub_set_uuid(struct pubnub *p, const char *uuid);
+
 /* TODO: Also use the same error policy handling as in the C library. */
 
 
@@ -159,6 +163,7 @@ struct pubnub {
     const char *publish_key, *subscribe_key;
     int timeout, sub_timeout;
     char origin[64];
+    char *uuid;
     char timetoken[64];
 
     /* API call state */

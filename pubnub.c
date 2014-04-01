@@ -46,6 +46,7 @@ pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key
     p->sub_timeout = 310;
     pubnub_set_origin(p, "http://pubsub.pubnub.com/");
     strcpy(p->timetoken, "0");
+    p->uuid = NULL;
 }
 
 void
@@ -78,6 +79,12 @@ void
 pubnub_set_sub_timeout(struct pubnub *p, int timeout)
 {
     p->sub_timeout = timeout;
+}
+
+void
+pubnub_set_uuid(struct pubnub *p, const char *uuid)
+{
+    p->uuid = uuid;
 }
 
 
@@ -526,8 +533,8 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
     p->http_content_length = 0;
 
     p->http_buf_len = snprintf(p->http_buf.url, sizeof(p->http_buf.url),
-            "/subscribe/%s/%s/0/%s", p->subscribe_key,
-            channel, p->timetoken);
+            "/subscribe/%s/%s/0/%s%s%s", p->subscribe_key,
+            channel, p->timetoken, p->uuid ? "?uuid=" : "", p->uuid ? p->uuid : "");
 
     p->cb = cb; p->cbdata = cb_data;
     p->internal_cb = pubnub_subscribe_icb;
