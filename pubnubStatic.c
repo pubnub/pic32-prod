@@ -136,3 +136,15 @@ void PubnubStaticProcess(void)
     PubnubStaticProcPublish(&pCtx);
     PubnubStaticProcSubscribe(&sCtx);
 }
+
+struct pubnub *
+PubnubStaticPubCtx(void)
+{
+	return &pCtx;
+}
+
+struct pubnub *
+PubnubStaticSubCtx(void)
+{
+	return &sCtx;
+}

@@ -25,4 +25,10 @@ extern bool bSubscribe;
 void PubnubStaticInit(const char *pubkey, const char *subkey, const char *pubChan, const char *subChan);
 void PubnubStaticProcess(void);
 
+/* Use these interfaces if you need to change Pub/Sub parameters,
+ * e.g. the UUID. */
+struct pubnub;
+struct pubnub *PubnubStaticPubCtx(void);
+struct pubnub *PubnubStaticSubCtx(void);
+
 #endif	/* PUBNUB_STATIC__H */
