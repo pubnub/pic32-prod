@@ -68,6 +68,8 @@ enum pubnub_res {
     PNR_HTTP_ERROR,
     /* Unexpected input in received JSON. */
     PNR_FORMAT_ERROR,
+    /* Request cancelled by user. */
+    PNR_CANCELLED,
 };
 
 
@@ -123,6 +125,10 @@ void pubnub_set_uuid(struct pubnub *p, const char *uuid);
 void pubnub_set_auth(struct pubnub *p, const char *auth);
 
 /* TODO: Also use the same error policy handling as in the C library. */
+
+/* Cancel an ongoing API request. The callback will be called with
+ * PNR_CANCELLED result. */
+void pubnub_cancel(struct pubnub *p);
 
 
 /** PubNub API Requests */

@@ -390,6 +390,13 @@ pubnub_update(struct pubnub *p)
 
 
 void
+pubnub_cancel(struct pubnub *p)
+{
+    pubnub_callback_and_idle(p, PNR_CANCELLED);
+}
+
+
+void
 pubnub_publish_icb(struct pubnub *p, enum pubnub_res result, int http_code,
         char *reply, void *cb, void *cbdata)
 {
