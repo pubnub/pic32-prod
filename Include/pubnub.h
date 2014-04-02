@@ -169,6 +169,17 @@ typedef void (*pubnub_subscribe_cb)(struct pubnub *p, enum pubnub_res result,
 bool pubnub_subscribe(struct pubnub *p, const char *channel,
         pubnub_subscribe_cb cb, void *cb_data);
 
+/* Leave the @channel. The response will usually be just a success
+ * confirmation. Use NULL as cb if you are not interested in result
+ * notification. The call itself returns false on immediate error. */
+/* You can use p->channel as the channel parameter if you called
+ * subscribe beforehand and want to leave all those channels (but don't
+ * forget to pubnub_cancel() the subscribe first). */
+typedef void (*pubnub_leave_cb)(struct pubnub *p, enum pubnub_res result,
+        int http_code, char *response, void *cb_data);
+bool pubnub_leave(struct pubnub *p, const char *channel,
+        pubnub_leave_cb cb, void *cb_data);
+
 
 /** Internal Definitions */
 

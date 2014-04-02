@@ -574,3 +574,41 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
     p->com_timeout = p->sub_timeout;
     return pubnub_http_connect(p);
 }
+
+
+void
+pubnub_leave_icb(struct pubnub *p, enum pubnub_res result, int http_code,
+        char *reply, void *cb, void *cbdata)
+{
+    if (cb)
+        ((pubnub_leave_cb) cb)(p, result, http_code, reply, cbdata);
+    free(reply);
+}
+
+bool
+pubnub_leave(struct pubnub *p, const char *channel,
+        pubnub_leave_cb cb, void *cb_data)
+{
+    if (p->state != PS_IDLE)
+        return false;
+    if (p->http_reply)
+        free(p->http_reply);
+    p->http_reply = NULL;
+    p->http_content_length = 0;
+
+    /* Make sure next subscribe() will be a join. */
+    strcpy(p->timetoken, "0");
+
+    p->http_buf_len = snprintf(p->http_buf.url, sizeof(p->http_buf.url),
+            "/v2/presence/sub-key/%s/channel/%s/leave?" "%s%s" "%s%s%s",
+            p->subscribe_key, channel,
+            p->uuid ? "uuid=" : "", p->uuid ? p->uuid : "",
+            p->uuid && p->auth ? "&" : "",
+            p->auth ? "auth=" : "", p->auth ? p->auth : "");
+
+    p->cb = cb; p->cbdata = cb_data;
+    p->internal_cb = pubnub_leave_icb;
+    p->channel = channel;
+    p->com_timeout = p->timeout;
+    return pubnub_http_connect(p);
+}
