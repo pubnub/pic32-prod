@@ -51,7 +51,9 @@ publish_cb(struct pubnub *p, enum pubnub_res result,
 {
     if (result != PNR_OK) {
         error(1, "publish", result);
-        pubTimer = TickGet() + RETRY_DELAY * TICK_SECOND;
+        // We do not enforce a cool-down as we do not actually
+        // retry the publish ourselves?
+        // pubTimer = TickGet() + RETRY_DELAY * TICK_SECOND;
     }
     bPublish = bPublishOn = false;
 }
