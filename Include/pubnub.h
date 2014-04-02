@@ -156,12 +156,15 @@ bool pubnub_publish(struct pubnub *p, const char *channel, const char *message,
  * Note that the @channel pointer here must stay valid throughout the
  * subscribe call (until the callback). You can release it in the callback
  * if you need to.
+ * Also note that the @channel string may contain multiple comma-separated
+ * channel names.
  *
  * Also note that some of the subscribed messages may be lost when
  * calling publish() after a subscribe() on the same context or
  * subscribe() on different channels in turn on the same context.
  * But typically, you will want two separate contexts for publish and
- * subscribe anyway.
+ * subscribe anyway. If you are changing the set of channels you are
+ * subscribed to, you should first call pubnub_leave() on the old set.
  *
  * The call itself returns false on immediate error. */
 typedef void (*pubnub_subscribe_cb)(struct pubnub *p, enum pubnub_res result,

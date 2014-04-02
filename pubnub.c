@@ -3,6 +3,21 @@
 #include "pubnub.h"
 
 
+/* Find the beginning of a JSON string that ends at &buf[len].
+ * Return -1 on error. */
+static int
+extract_last_string(char *buf, int len)
+{
+    buf[len] = 0;
+    int i;
+    for (i = len-1; i > 0; i--)
+        if (buf[i] == '"')
+            break;
+    if (!i || buf[i-1] != ',')
+        return -1;
+    return i;
+}
+
 /* Split a JSON array (with arbitrary contents) to multiple NUL-terminated
  * C strings. */
 static bool
@@ -488,16 +503,43 @@ error:
         goto error;
     }
 
-    /* Extract timetoken. */
-    reply[replylen-2] = 0;
-    int i;
-    for (i = replylen-3; i > 0; i--)
-        if (reply[i] == '"')
-            break;
-    /* Therefore, i points at
+    /* Extract the last argument. */
+    int i = extract_last_string(reply, replylen-2);
+    if (i < 0) {
+        result = PNR_FORMAT_ERROR;
+        goto error;
+    }
+
+    /* Now, the last argument may either be a timetoken or a channel list. */
+    if (reply[i-2] == '"') {
+        /* It is a channel list, there is another string argument in front
+         * of us. Process the channel list ... */
+        p->chan_ofs = i+1;
+        p->chan_end = replylen;
+        int k;
+        for (k = p->chan_end-1; k > p->chan_ofs; k--)
+            if (reply[k] == ',')
+                reply[k] = 0;
+
+        /* ... and look for timetoken again. */
+        i = extract_last_string(reply, i-2);
+        if (i < 0) {
+            result = PNR_FORMAT_ERROR;
+            goto error;
+        }
+
+    } else {
+        p->chan_ofs = 0;
+        p->chan_end = 0;
+    }
+
+    /* Now, i points at
      * [[1,2,3],"5678"]
+     * [[1,2,3],"5678","a,b,c"]
      *          ^-- here */
-    if (!i || reply[i-1] != ',' || replylen-2 - (i+1) >= 64) {
+
+    /* Setup timetoken. */
+    if (replylen-2 - (i+1) >= 64) {
         result = PNR_FORMAT_ERROR;
         goto error;
     }
@@ -513,12 +555,12 @@ error:
         return;
     }
 
+    p->http_reply = reply;
+
     /* Set up the message list - offset, length and NUL-characters splitting
      * the messages. */
     p->msg_ofs = 2;
     p->msg_end = i-2;
-    p->http_reply = reply;
-
     if (!split_array(&p->http_reply[p->msg_ofs], p->msg_end - p->msg_ofs)) {
         p->http_reply = NULL;
         if (cb)
@@ -528,7 +570,9 @@ error:
 
     /* Return the first message. */
     if (cb)
-        ((pubnub_subscribe_cb) cb)(p, PNR_OK, http_code, p->channel, &p->http_reply[p->msg_ofs], cbdata);
+        ((pubnub_subscribe_cb) cb)(p, PNR_OK, http_code,
+            p->chan_ofs ? &p->http_reply[p->chan_ofs] : p->channel,
+            &p->http_reply[p->msg_ofs], cbdata);
 }
 
 bool
@@ -543,8 +587,19 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
         p->msg_ofs += prevlen;
         if (p->msg_ofs < p->msg_end) {
             /* Next message from stash-away buffer. */
+
+            char *msgchan = "";
+            int prevchlen = strlen(&p->http_reply[p->chan_ofs]) + 1;
+            if (p->chan_ofs > 0 && p->chan_ofs < p->chan_end) {
+                p->chan_ofs += prevchlen;
+                if (p->chan_ofs < p->chan_end)
+                    msgchan = &p->http_reply[p->chan_ofs];
+            }
+
             if (cb)
-                cb(p, PNR_OK, 0, p->channel, &p->http_reply[p->msg_ofs], cb_data);
+                cb(p, PNR_OK, 0,
+                    p->chan_ofs ? msgchan : p->channel,
+                    &p->http_reply[p->msg_ofs], cb_data);
             return true;
         }
         /* That's all. free() below and fetch new messages. */
