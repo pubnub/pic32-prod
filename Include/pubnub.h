@@ -217,6 +217,11 @@ struct pubnub {
     unsigned http_buf_len;
     unsigned http_content_length;
     char *http_reply;
+    /* These in-string offsets are used for yielding messages received
+     * by subscribe - the beginning of last yielded message and total
+     * length of message buffer, and the same for channels.
+     * These values are valid only when http_reply != NULL. */
+    unsigned short msg_ofs, msg_end, chan_ofs, chan_end;
 };
 
 #endif	/* PUBNUB__H */

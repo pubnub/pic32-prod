@@ -494,6 +494,9 @@ error:
     for (i = replylen-3; i > 0; i--)
         if (reply[i] == '"')
             break;
+    /* Therefore, i points at
+     * [[1,2,3],"5678"]
+     *          ^-- here */
     if (!i || reply[i-1] != ',' || replylen-2 - (i+1) >= 64) {
         result = PNR_FORMAT_ERROR;
         goto error;
@@ -510,23 +513,22 @@ error:
         return;
     }
 
-    /* Shrink the reply buffer to contain just the array contents. */
-    p->http_buf_len = i-2-1;
-    memmove(reply, reply + 2, p->http_buf_len);
-    p->http_reply = reply = realloc(reply, p->http_buf_len);
+    /* Set up the message list - offset, length and NUL-characters splitting
+     * the messages. */
+    p->msg_ofs = 2;
+    p->msg_end = i-2;
+    p->http_reply = reply;
 
-    /* Now, chop the reply buffer to individual strings corresponding
-     * to array contents. */
-    if (!split_array(p->http_reply, p->http_buf_len)) {
+    if (!split_array(&p->http_reply[p->msg_ofs], p->msg_end - p->msg_ofs)) {
         p->http_reply = NULL;
         if (cb)
             ((pubnub_subscribe_cb) cb)(p, PNR_FORMAT_ERROR, http_code, p->channel, reply, cbdata);
         free(reply);
     }
 
-    /* Returning the reply here means returning the first component. */
+    /* Return the first message. */
     if (cb)
-        ((pubnub_subscribe_cb) cb)(p, PNR_OK, http_code, p->channel, reply, cbdata);
+        ((pubnub_subscribe_cb) cb)(p, PNR_OK, http_code, p->channel, &p->http_reply[p->msg_ofs], cbdata);
 }
 
 bool
@@ -537,18 +539,12 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
         return false;
 
     if (p->http_reply && !strcmp(p->channel, channel)) {
-        int prevlen = strlen(p->http_reply) + 1;
-        if (prevlen < p->http_buf_len) {
+        int prevlen = strlen(&p->http_reply[p->msg_ofs]) + 1;
+        p->msg_ofs += prevlen;
+        if (p->msg_ofs < p->msg_end) {
             /* Next message from stash-away buffer. */
-            /* XXX: We can be either memory-frugal or CPU-frugal
-             * here. We choose to be memory-frugal by copying
-             * over messages many times, but we may want to make
-             * this configurable. */
-            p->http_buf_len -= prevlen;
-            memmove(p->http_reply, p->http_reply + prevlen, p->http_buf_len);
-            p->http_reply = (char *) realloc(p->http_reply, p->http_buf_len);
             if (cb)
-                cb(p, PNR_OK, 0, p->channel, p->http_reply, cb_data);
+                cb(p, PNR_OK, 0, p->channel, &p->http_reply[p->msg_ofs], cb_data);
             return true;
         }
         /* That's all. free() below and fetch new messages. */
