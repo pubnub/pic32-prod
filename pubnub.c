@@ -538,7 +538,7 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
     if (p->state != PS_IDLE)
         return false;
 
-    if (p->http_reply && !strcmp(p->channel, channel)) {
+    if (p->http_reply) {
         int prevlen = strlen(&p->http_reply[p->msg_ofs]) + 1;
         p->msg_ofs += prevlen;
         if (p->msg_ofs < p->msg_end) {
