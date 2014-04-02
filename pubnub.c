@@ -104,12 +104,13 @@ pubnub_http_connect(struct pubnub *p)
     p->state = PS_CONNECT;
     p->timer = TickGet();
     p->http_substate = 0;
+    p->http_code = 0;
     p->http_buf_len = 0;
     return true;
 }
 
 static void
-pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result, int http_code)
+pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result)
 {
     /* Reset the context *before* the callback, as the callback may
      * typically want to issue another API call. */
@@ -118,6 +119,8 @@ pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result, int http_code
 
     p->state = PS_IDLE;
     p->http_substate = 0;
+    int http_code = p->http_code;
+    p->http_code = 0;
 
     if (p->socket != INVALID_SOCKET) {
         TCPDisconnect(p->socket);
@@ -130,6 +133,13 @@ pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result, int http_code
     void *cb = p->cb, *cbdata = p->cbdata;
     p->cb = p->cbdata = NULL;
 
+    if (http_code > 0 && http_code / 100 != 2) {
+        /* We received an error HTTP status code; force PNR_HTTP_ERROR
+         * result. This can override PNR_OK or a different error
+         * signaled later during parsing of the request. */
+        result = PNR_HTTP_ERROR;
+    }
+
     p->internal_cb(p, result, http_code, http_reply, cb, cbdata);
 }
 
@@ -137,7 +147,7 @@ static bool
 pubnub_update_test_timeout(struct pubnub *p)
 {
     if (TickGet() - p->timer > p->com_timeout * TICK_SECOND) {
-        pubnub_callback_and_idle(p, PNR_TIMEOUT, 0);
+        pubnub_callback_and_idle(p, PNR_TIMEOUT);
         return true;
     }
     return false;
@@ -147,7 +157,7 @@ static bool
 pubnub_update_sendrequest(struct pubnub *p)
 {
     if (!TCPIsConnected(p->socket)) {
-        pubnub_callback_and_idle(p, PNR_IO_ERROR, 0);
+        pubnub_callback_and_idle(p, PNR_IO_ERROR);
         return false;
     } else if (pubnub_update_test_timeout(p))
         return false;
@@ -200,7 +210,7 @@ pubnub_update_recvreply(struct pubnub *p)
     int readylen = TCPIsGetReady(p->socket);
     if (!readylen) {
         if (!TCPIsConnected(p->socket)) {
-            pubnub_callback_and_idle(p, PNR_IO_ERROR, 0);
+            pubnub_callback_and_idle(p, PNR_IO_ERROR);
             return;
         }
         pubnub_update_test_timeout(p);
@@ -246,7 +256,7 @@ pubnub_update_recvreply(struct pubnub *p)
                     case 0:
                     case 3: /* Error. */
 io_error:
-                        pubnub_callback_and_idle(p, PNR_IO_ERROR, 0);
+                        pubnub_callback_and_idle(p, PNR_IO_ERROR);
                         return; /* straight out */
                 }
 
@@ -254,11 +264,10 @@ io_error:
                 /* An HTTP status line. */
                 if (strncmp(bufptr, "HTTP/1.", 7) || !bufptr[7] || !bufptr[8])
                     goto io_error;
-                int http_code = atoi(bufptr+9);
-                if (http_code / 100 != 2) {
-                    pubnub_callback_and_idle(p, PNR_HTTP_ERROR, http_code);
-                    return;
-                }
+                p->http_code = atoi(bufptr+9);
+                /* We do not panic in case of non-200 code; instead,
+                 * calmly load the response and only then signal
+                 * an error from within pubnub_callback_and_idle(). */
                 p->http_substate = 1;
 
             } else if (p->http_substate < 3) {
@@ -296,7 +305,7 @@ pubnub_update_recvbody(struct pubnub *p)
     if (!p->http_reply) {
         if (p->http_content_length > PUBNUB_REPLY_MAXLEN) {
             /* Too large reply. Abort and report format error. */
-            pubnub_callback_and_idle(p, PNR_FORMAT_ERROR, 0);
+            pubnub_callback_and_idle(p, PNR_FORMAT_ERROR);
             return;
         }
         p->http_reply = malloc(p->http_content_length+1);
@@ -315,7 +324,7 @@ pubnub_update_recvbody(struct pubnub *p)
     if (!readylen) {
         if (!TCPIsConnected(p->socket)) {
 io_error:
-            pubnub_callback_and_idle(p, PNR_IO_ERROR, 0);
+            pubnub_callback_and_idle(p, PNR_IO_ERROR);
             return;
         }
         pubnub_update_test_timeout(p);
@@ -374,7 +383,7 @@ pubnub_update(struct pubnub *p)
             break;
 
         case PS_PROCESS:
-            pubnub_callback_and_idle(p, PNR_OK, 0);
+            pubnub_callback_and_idle(p, PNR_OK);
             break;
     }
 }
