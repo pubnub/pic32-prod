@@ -72,9 +72,9 @@ error(int led, const char *ctx, enum pubnub_res result)
 }
 
 
-static void subscribe_cb(struct pubnub *p, enum pubnub_res result, const char *channel, char *response, void *cb_data);
+static void subscribe_cb(struct pubnub *p, enum pubnub_res result, int http_code, const char *channel, char *response, void *cb_data);
 static void
-publish_cb(struct pubnub *p, enum pubnub_res result,
+publish_cb(struct pubnub *p, enum pubnub_res result, int http_code,
         char *response, void *cb_data)
 {
     if (result != PNR_OK)
@@ -85,7 +85,7 @@ publish_cb(struct pubnub *p, enum pubnub_res result,
 }
 
 static void
-subscribe_cb(struct pubnub *p, enum pubnub_res result,
+subscribe_cb(struct pubnub *p, enum pubnub_res result, int http_code,
         const char *channel, char *response, void *cb_data)
 {
     if (result == PNR_TIMEOUT) {

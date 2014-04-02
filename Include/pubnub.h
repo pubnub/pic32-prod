@@ -132,7 +132,7 @@ void pubnub_set_auth(struct pubnub *p, const char *auth);
  * are not interested in result notification. The call itself returns
  * false on immediate error (e.g. too long message). */
 typedef void (*pubnub_publish_cb)(struct pubnub *p, enum pubnub_res result,
-        char *response, void *cb_data);
+        int http_code, char *response, void *cb_data);
 bool pubnub_publish(struct pubnub *p, const char *channel, const char *message,
         pubnub_publish_cb cb, void *cb_data);
 
@@ -159,7 +159,7 @@ bool pubnub_publish(struct pubnub *p, const char *channel, const char *message,
  *
  * The call itself returns false on immediate error. */
 typedef void (*pubnub_subscribe_cb)(struct pubnub *p, enum pubnub_res result,
-        const char *channel, char *response, void *cb_data);
+        int http_code, const char *channel, char *response, void *cb_data);
 bool pubnub_subscribe(struct pubnub *p, const char *channel,
         pubnub_subscribe_cb cb, void *cb_data);
 
@@ -180,7 +180,7 @@ struct pubnub {
     /* API call state */
     void *cb, *cbdata;
     const char *channel;
-    void (*internal_cb)(struct pubnub *p, enum pubnub_res result, char *reply, void *cb, void *cbdata);
+    void (*internal_cb)(struct pubnub *p, enum pubnub_res result, int http_code, char *reply, void *cb, void *cbdata);
     int com_timeout;
 
     /* Network communication state */

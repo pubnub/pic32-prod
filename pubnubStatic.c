@@ -46,10 +46,12 @@ error(int led, const char *ctx, enum pubnub_res result)
 
 
 static void
-publish_cb(struct pubnub *p, enum pubnub_res result,
+publish_cb(struct pubnub *p, enum pubnub_res result, int http_code,
         char *response, void *cb_data)
 {
     if (result != PNR_OK) {
+        /* TODO: Error reporting, let user decide whether to reply?
+         * (incl. http_code). */
         error(1, "publish", result);
         // We do not enforce a cool-down as we do not actually
         // retry the publish ourselves?
@@ -59,13 +61,15 @@ publish_cb(struct pubnub *p, enum pubnub_res result,
 }
 
 static void
-subscribe_cb(struct pubnub *p, enum pubnub_res result,
+subscribe_cb(struct pubnub *p, enum pubnub_res result, int http_code,
         const char *channel, char *response, void *cb_data)
 {
     bSubscribeOn = false;
     if (result == PNR_TIMEOUT)
         return;
     if (result != PNR_OK) {
+        /* TODO: Error reporting, let user decide whether to reply?
+         * (incl. http_code). */
         error(2, "subscribe", result);
         subTimer = TickGet() + RETRY_DELAY * TICK_SECOND;
         return;

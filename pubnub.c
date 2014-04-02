@@ -109,7 +109,7 @@ pubnub_http_connect(struct pubnub *p)
 }
 
 static void
-pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result)
+pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result, int http_code)
 {
     /* Reset the context *before* the callback, as the callback may
      * typically want to issue another API call. */
@@ -130,14 +130,14 @@ pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result)
     void *cb = p->cb, *cbdata = p->cbdata;
     p->cb = p->cbdata = NULL;
 
-    p->internal_cb(p, result, http_reply, cb, cbdata);
+    p->internal_cb(p, result, http_code, http_reply, cb, cbdata);
 }
 
 static bool
 pubnub_update_test_timeout(struct pubnub *p)
 {
     if (TickGet() - p->timer > p->com_timeout * TICK_SECOND) {
-        pubnub_callback_and_idle(p, PNR_TIMEOUT);
+        pubnub_callback_and_idle(p, PNR_TIMEOUT, 0);
         return true;
     }
     return false;
@@ -147,7 +147,7 @@ static bool
 pubnub_update_sendrequest(struct pubnub *p)
 {
     if (!TCPIsConnected(p->socket)) {
-        pubnub_callback_and_idle(p, PNR_IO_ERROR);
+        pubnub_callback_and_idle(p, PNR_IO_ERROR, 0);
         return false;
     } else if (pubnub_update_test_timeout(p))
         return false;
@@ -200,7 +200,7 @@ pubnub_update_recvreply(struct pubnub *p)
     int readylen = TCPIsGetReady(p->socket);
     if (!readylen) {
         if (!TCPIsConnected(p->socket)) {
-            pubnub_callback_and_idle(p, PNR_IO_ERROR);
+            pubnub_callback_and_idle(p, PNR_IO_ERROR, 0);
             return;
         }
         pubnub_update_test_timeout(p);
@@ -246,7 +246,7 @@ pubnub_update_recvreply(struct pubnub *p)
                     case 0:
                     case 3: /* Error. */
 io_error:
-                        pubnub_callback_and_idle(p, PNR_IO_ERROR);
+                        pubnub_callback_and_idle(p, PNR_IO_ERROR, 0);
                         return; /* straight out */
                 }
 
@@ -256,7 +256,7 @@ io_error:
                     goto io_error;
                 int http_code = atoi(bufptr+9);
                 if (http_code / 100 != 2) {
-                    pubnub_callback_and_idle(p, PNR_HTTP_ERROR);
+                    pubnub_callback_and_idle(p, PNR_HTTP_ERROR, http_code);
                     return;
                 }
                 p->http_substate = 1;
@@ -296,7 +296,7 @@ pubnub_update_recvbody(struct pubnub *p)
     if (!p->http_reply) {
         if (p->http_content_length > PUBNUB_REPLY_MAXLEN) {
             /* Too large reply. Abort and report format error. */
-            pubnub_callback_and_idle(p, PNR_FORMAT_ERROR);
+            pubnub_callback_and_idle(p, PNR_FORMAT_ERROR, 0);
             return;
         }
         p->http_reply = malloc(p->http_content_length+1);
@@ -315,7 +315,7 @@ pubnub_update_recvbody(struct pubnub *p)
     if (!readylen) {
         if (!TCPIsConnected(p->socket)) {
 io_error:
-            pubnub_callback_and_idle(p, PNR_IO_ERROR);
+            pubnub_callback_and_idle(p, PNR_IO_ERROR, 0);
             return;
         }
         pubnub_update_test_timeout(p);
@@ -374,17 +374,18 @@ pubnub_update(struct pubnub *p)
             break;
 
         case PS_PROCESS:
-            pubnub_callback_and_idle(p, PNR_OK);
+            pubnub_callback_and_idle(p, PNR_OK, 0);
             break;
     }
 }
 
 
 void
-pubnub_publish_icb(struct pubnub *p, enum pubnub_res result, char *reply, void *cb, void *cbdata)
+pubnub_publish_icb(struct pubnub *p, enum pubnub_res result, int http_code,
+        char *reply, void *cb, void *cbdata)
 {
     if (cb)
-        ((pubnub_publish_cb) cb)(p, result, reply, cbdata);
+        ((pubnub_publish_cb) cb)(p, result, http_code, reply, cbdata);
     free(reply);
 }
 
@@ -442,7 +443,8 @@ pubnub_publish(struct pubnub *p, const char *channel, const char *message,
 
 
 void
-pubnub_subscribe_icb(struct pubnub *p, enum pubnub_res result, char *reply, void *cb, void *cbdata)
+pubnub_subscribe_icb(struct pubnub *p, enum pubnub_res result, int http_code,
+        char *reply, void *cb, void *cbdata)
 {
     if (result != PNR_OK) {
 error:
@@ -458,7 +460,7 @@ error:
             strcpy(p->timetoken, "0");
         }
         if (cb)
-            ((pubnub_subscribe_cb) cb)(p, result, p->channel, reply, cbdata);
+            ((pubnub_subscribe_cb) cb)(p, result, http_code, p->channel, reply, cbdata);
         return;
     }
     int replylen = strlen(reply);
@@ -488,7 +490,7 @@ error:
     if (i-2 == 2) {
         free(reply);
         if (!pubnub_subscribe(p, p->channel, cb, cbdata) && cb)
-            ((pubnub_subscribe_cb) cb)(p, PNR_IO_ERROR, p->channel, NULL, cbdata);
+            ((pubnub_subscribe_cb) cb)(p, PNR_IO_ERROR, http_code, p->channel, NULL, cbdata);
         return;
     }
 
@@ -502,13 +504,13 @@ error:
     if (!split_array(p->http_reply, p->http_buf_len)) {
         p->http_reply = NULL;
         if (cb)
-            ((pubnub_subscribe_cb) cb)(p, PNR_FORMAT_ERROR, p->channel, reply, cbdata);
+            ((pubnub_subscribe_cb) cb)(p, PNR_FORMAT_ERROR, http_code, p->channel, reply, cbdata);
         free(reply);
     }
 
     /* Returning the reply here means returning the first component. */
     if (cb)
-        ((pubnub_subscribe_cb) cb)(p, PNR_OK, p->channel, reply, cbdata);
+        ((pubnub_subscribe_cb) cb)(p, PNR_OK, http_code, p->channel, reply, cbdata);
 }
 
 bool
@@ -530,7 +532,7 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
             memmove(p->http_reply, p->http_reply + prevlen, p->http_buf_len);
             p->http_reply = (char *) realloc(p->http_reply, p->http_buf_len);
             if (cb)
-                cb(p, PNR_OK, p->channel, p->http_reply, cb_data);
+                cb(p, PNR_OK, 0, p->channel, p->http_reply, cb_data);
             return true;
         }
         /* That's all. free() below and fetch new messages. */
