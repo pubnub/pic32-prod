@@ -31,4 +31,9 @@ struct pubnub;
 struct pubnub *PubnubStaticPubCtx(void);
 struct pubnub *PubnubStaticSubCtx(void);
 
+/* Use this interface to change the set of subscribed channels.
+ * You can use multiple channel names delimited by a comma.
+ * N.B. the list of channels may be at most 64 bytes long. */
+void PubnubStaticSubChan(const char *subChan);
+
 #endif	/* PUBNUB_STATIC__H */

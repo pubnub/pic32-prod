@@ -13,7 +13,7 @@ bool bSubscribe;
 static bool bSubscribeOn;
 
 static struct pubnub pCtx, sCtx;
-static const char *pubChan, *subChan;
+static const char pubChan[64], subChan[64];
 static DWORD pubTimer, subTimer;
 
 
@@ -65,7 +65,7 @@ subscribe_cb(struct pubnub *p, enum pubnub_res result, int http_code,
         const char *channel, char *response, void *cb_data)
 {
     bSubscribeOn = false;
-    if (result == PNR_TIMEOUT)
+    if (result == PNR_TIMEOUT || result == PNR_CANCELLED)
         return;
     if (result != PNR_OK) {
         /* TODO: Error reporting, let user decide whether to reply?
@@ -78,6 +78,15 @@ subscribe_cb(struct pubnub *p, enum pubnub_res result, int http_code,
     /* Truncate if response is too long. */
     snprintf(subMsgBuf, sizeof(subMsgBuf), "%s", response);
     bSubscribe = true;
+}
+
+static void
+leave_cb(struct pubnub *p, enum pubnub_res result, int http_code,
+        char *response, void *cb_data)
+{
+    bLeave = false;
+    /* The result does not matter. */
+    /* We will automatically subscribe now. */
 }
 
 
@@ -109,7 +118,7 @@ PubnubStaticProcSubscribe(struct pubnub *pn)
         return; // cool-down
     subTimer = 0;
 
-    if (bSubscribe == true || bSubscribeOn == true)
+    if (bSubscribe == true || bSubscribeOn == true || bLeave == true)
         return; // nothing new to do
 
     bSubscribeOn = true;
@@ -126,8 +135,10 @@ PubnubStaticInit(const char *pubkey, const char *subkey,
 {
     pubnub_init(&pCtx, pubkey, subkey);
     pubnub_init(&sCtx, pubkey, subkey);
-    pubChan = pubChan_;
-    subChan = subChan_;
+    strncpy(pubChan, subChan_, sizeof(pubChan));
+    pubChan[sizeof(pubChan)-1] = 0;
+    strncpy(subChan, subChan_, sizeof(subChan));
+    subChan[sizeof(subChan)-1] = 0;
 
     /* We will not do a pubnub call right away as the network
      * may not be configured properly at this moment yet (e.g.
@@ -153,4 +164,24 @@ struct pubnub *
 PubnubStaticSubCtx(void)
 {
 	return &sCtx;
+}
+
+void
+PubnubStaticSubChan(const char *subChan_)
+{
+    pubnub_cancel(&sCtx);
+    if (!pubnub_leave(&sCtx, subChan, leave_cb, NULL)) {
+        error(2, "leave", 5);
+    } else {
+        bLeave = true;
+    }
+
+    /* pubnub_leave() consumes the subChan buffer immediately so we can
+     * replace it now. */
+    strncpy(subChan, subChan_, sizeof(subChan));
+    subChan[sizeof(subChan)-1] = 0;
+
+    /* At this point, bSubscribeOn == false, bSubscribe == false.
+     * Therefore, the moment bLeave drops to false, we will resubscribe
+     * again with the new subChan set. */
 }
