@@ -31,6 +31,15 @@
  * PUBNUB_REPLY_MAXLEN overrun described above. */
 #define PUBNUB_MISSMSG_OK 1
 
+/* If #defined, the PubNub implementation will support SSL (https) connections
+ * using the CyaSSL library.  The *.pubnub.com server certificate is currently
+ * hardcoded in pubnub.c; a more future-proof SSL certificate verification
+ * is still a TODO. */
+#define PUBNUB_SSL 1
+#if PUBNUB_SSL
+#include "cyassl/ssl.h"
+#endif
+
 /* The PubNub library is designed for cooperative multi-tasking as is the
  * standard in the PIC32 environment. You can have multiple pubnub contexts
  * established; in each context, up to one API call may be ongoing (typically
@@ -70,6 +79,8 @@ enum pubnub_res {
     PNR_FORMAT_ERROR,
     /* Request cancelled by user. */
     PNR_CANCELLED,
+    /* SSL error. */
+    PNR_SSL_ERROR,
 };
 
 
@@ -207,6 +218,7 @@ struct pubnub {
     enum pubnub_state {
         PS_IDLE,
         PS_CONNECT,
+        PS_SSLCONNECT,
         PS_HTTPREQUEST,
         PS_HTTPREPLY,
         PS_HTTPBODY,
@@ -225,6 +237,12 @@ struct pubnub {
      * length of message buffer, and the same for channels.
      * These values are valid only when http_reply != NULL. */
     unsigned short msg_ofs, msg_end, chan_ofs, chan_end;
+
+#if PUBNUB_SSL
+    /* SSL state */
+    BYTE use_ssl;
+    CYASSL *ssl;
+#endif
 };
 
 #endif	/* PUBNUB__H */

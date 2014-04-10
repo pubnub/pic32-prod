@@ -22,6 +22,9 @@ To add PubNub support to your PIC application that uses the PIC TCP/IP stack:
 
 	PUBNUB_SOCKET_INITIALIZER
 
+  * (OPTIONAL) If you want SSL support, download CyaSSL, the CyaSSL SDK
+    PIC32_cyassl_example and follow the attached MPLABx setup instructions.
+
 (multiple times if you want to use multiple PubNub context simultaneously).
 If you defined a custom TCP socket type of id 13, change the id in
 pubnubConfig.h. (If you aren't sure, you probably don't need to do this.)
