@@ -667,7 +667,7 @@ pubnub_update_recvbody(struct pubnub *p)
     if (p->http_content_length == 0) {
         p->http_reply[p->http_buf_len] = 0;
         p->state = PS_PROCESS;
-	return;
+        return;
     }
 
     int readylen = TCPIsGetReady(p->socket);
@@ -830,7 +830,7 @@ pubnub_subscribe_icb(struct pubnub *p, enum pubnub_res result, int http_code,
     if (result != PNR_OK) {
 error:
 #ifdef PUBNUB_MISSMSG_OK
-	if (1) {
+        if (1) {
 #else
         if (result == PNR_FORMAT_ERROR) {
 #endif
