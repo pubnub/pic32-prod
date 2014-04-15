@@ -581,8 +581,8 @@ pubnub_update_recvreply(struct pubnub *p)
             p->http_buf_len = 0;
         }
         int gotlen = pubnub_tcp_read(p,
-                (BYTE *) p->http_buf.line, p->http_buf_len,
-                sizeof(p->http_buf.line)-1);
+                (BYTE *) p->http_buf.line, sizeof(p->http_buf.line)-1,
+                p->http_buf_len);
         p->http_buf_len += gotlen;
         readylen -= gotlen;
 
@@ -689,14 +689,13 @@ io_error:
             goto io_error;
 
         int gotlen = pubnub_tcp_read(p,
-                (BYTE *) p->http_reply, p->http_buf_len,
-                p->http_content_length);
+                (BYTE *) p->http_reply, p->http_content_length,
+                p->http_buf_len);
         p->http_buf_len += gotlen;
-        p->http_content_length -= gotlen;
         readylen -= gotlen;
     }
 
-    if (p->http_content_length == 0) {
+    if (p->http_buf_len == p->http_content_length) {
         p->http_reply[p->http_buf_len] = 0;
         p->state = PS_PROCESS;
     }
