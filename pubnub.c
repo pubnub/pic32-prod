@@ -680,7 +680,6 @@ io_error:
             return;
         }
         memcpy(p->http_reply, p->http_buf.line, p->http_buf_len);
-        p->http_content_length -= p->http_buf_len;
     }
     if (p->http_content_length == 0) {
         p->http_reply[p->http_buf_len] = 0;
