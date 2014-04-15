@@ -270,8 +270,8 @@ pubnub_tcp_writestr(struct pubnub *p, char *string, int len)
 
 #else
 
-static ssize_t
-pubnub_tcp_read(struct pubnub *p, BYTE *buf, size_t buf_size, size_t buf_pos)
+static int
+pubnub_tcp_read(struct pubnub *p, BYTE *buf, int buf_size, int buf_pos)
 {
     return TCPGetArray(p->socket, buf + buf_size, buf_pos - buf_size);
 }
@@ -281,7 +281,7 @@ pubnub_tcp_writestr(struct pubnub *p, char *string, int len)
 {
     if (TCPIsPutReady(p->socket) < len)
         return false;
-    TCPPutString(p->socket, string);
+    TCPPutString(p->socket, (BYTE *) string);
     return true;
 }
 #endif
