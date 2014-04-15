@@ -253,18 +253,28 @@ get_ssl_ctx()
     return ssl_ctx;
 }
 
+int rerr;
 static int
 pubnub_tcp_read(struct pubnub *p, BYTE *buf, size_t buf_size, size_t buf_pos)
 {
-    return CyaSSL_read(p->ssl, buf + buf_size, buf_pos - buf_size);
+    int r = CyaSSL_read(p->ssl, buf + buf_pos, buf_size - buf_pos);
+    rerr = r;
+    if (r < 0) {
+        int error = CyaSSL_get_error(p->ssl, 0);
+        if (error == SSL_ERROR_WANT_READ || error == SSL_ERROR_WANT_WRITE)
+            return 0;
+        else
+            return -1;
+    }
+    return r;
 }
 
 static bool
 pubnub_tcp_writestr(struct pubnub *p, char *string, int len)
 {
     int r = CyaSSL_write(p->ssl, string, len);
-    if (r == SSL_ERROR_WANT_READ || r == SSL_ERROR_WANT_WRITE)
-        return false;
+    if (r < 0)
+        return false; // even if it's WANT_WRITE; we retry later
     return true;
 }
 
@@ -273,7 +283,11 @@ pubnub_tcp_writestr(struct pubnub *p, char *string, int len)
 static int
 pubnub_tcp_read(struct pubnub *p, BYTE *buf, int buf_size, int buf_pos)
 {
-    return TCPGetArray(p->socket, buf + buf_size, buf_pos - buf_size);
+    int readylen = TCPIsGetReady(p->socket);
+    if (!readylen)
+        return TCPIsConnected(p->socket) ? 0 : -1;
+
+    return TCPGetArray(p->socket, buf + buf_pos, buf_size - buf_pos);
 }
 
 static bool
@@ -285,6 +299,9 @@ pubnub_tcp_writestr(struct pubnub *p, char *string, int len)
     return true;
 }
 #endif
+
+/* pubnub_tcp_read() returns #of bytes in case of a read, 0 in case
+ * there is nothing to read, and -1 in case of IO error. */
 
 
 /* Find the beginning of a JSON string that ends at &buf[len].
@@ -557,34 +574,32 @@ pubnub_update_sendrequest(struct pubnub *p)
 static void
 pubnub_update_recvreply(struct pubnub *p)
 {
-    int readylen = TCPIsGetReady(p->socket);
-    if (!readylen) {
-        if (!TCPIsConnected(p->socket)) {
-            pubnub_callback_and_idle(p, PNR_IO_ERROR);
-            return;
-        }
-        pubnub_update_test_timeout(p);
-        return;
-    }
-
     /* http_substate:
      * 0 first line (status code etc.)
      * 1 plain header
      * 2 plain header, chunked encoding detected
      * 3 chunk size line
      * 4 body follows now (transient) */
-    while (p->state == PS_HTTPREPLY && readylen > 0) {
+    while (p->state == PS_HTTPREPLY) {
         if (p->http_buf_len == sizeof (p->http_buf.line)) {
             /* Our buffer is already full and we did not extract a line.
              * Normally, hitting a long line in the HTTP header should
              * not happen, let's just flush the buffer. */
             p->http_buf_len = 0;
         }
+
         int gotlen = pubnub_tcp_read(p,
                 (BYTE *) p->http_buf.line, sizeof(p->http_buf.line)-1,
                 p->http_buf_len);
+        if (gotlen < 0) {
+            pubnub_callback_and_idle(p, PNR_IO_ERROR);
+            return;
+        } else if (gotlen == 0) {
+            pubnub_update_test_timeout(p);
+            return;
+        }
+
         p->http_buf_len += gotlen;
-        readylen -= gotlen;
 
         p->http_buf.line[p->http_buf_len] = 0;
         char *bufptr = p->http_buf.line;
@@ -659,8 +674,11 @@ pubnub_update_recvbody(struct pubnub *p)
             return;
         }
         p->http_reply = malloc(p->http_content_length+1);
-        if (p->http_buf_len > p->http_content_length)
-            goto io_error;
+        if (p->http_buf_len > p->http_content_length) {
+io_error:
+            pubnub_callback_and_idle(p, PNR_IO_ERROR);
+            return;
+        }
         memcpy(p->http_reply, p->http_buf.line, p->http_buf_len);
         p->http_content_length -= p->http_buf_len;
     }
@@ -670,29 +688,21 @@ pubnub_update_recvbody(struct pubnub *p)
         return;
     }
 
-    int readylen = TCPIsGetReady(p->socket);
-    if (!readylen) {
-        if (!TCPIsConnected(p->socket)) {
-io_error:
-            pubnub_callback_and_idle(p, PNR_IO_ERROR);
-            return;
-        }
-        pubnub_update_test_timeout(p);
-        if (p->state == PS_IDLE) {
-            free(p->http_reply); p->http_reply = NULL;
-        }
-        return;
-    }
-
-    while (readylen > 0) {
-        if (readylen > p->http_content_length)
-            goto io_error;
-
+    while (p->http_buf_len < p->http_content_length) {
         int gotlen = pubnub_tcp_read(p,
                 (BYTE *) p->http_reply, p->http_content_length,
                 p->http_buf_len);
+        if (gotlen < 0) {
+            goto io_error;
+        } else if (gotlen == 0) {
+            pubnub_update_test_timeout(p);
+            if (p->state == PS_IDLE) {
+                free(p->http_reply); p->http_reply = NULL;
+            }
+            return;
+        }
+
         p->http_buf_len += gotlen;
-        readylen -= gotlen;
     }
 
     if (p->http_buf_len == p->http_content_length) {
