@@ -11,9 +11,10 @@ static bool bPublishOn;
 char subMsgBuf[256];
 bool bSubscribe;
 static bool bSubscribeOn;
+static bool bLeave;
 
 static struct pubnub pCtx, sCtx;
-static const char pubChan[64], subChan[64];
+static char pubChan[64], subChan[64];
 static DWORD pubTimer, subTimer;
 
 
