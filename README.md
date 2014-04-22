@@ -85,3 +85,30 @@ to turn on the LED 2, then turn on and back off LED 1. Blinking lights!
 
 You can then use pubnubDemo.c as a base for your own usage of the PubNub
 cloud. Enjoy!
+
+Resource Usage
+--------------
+
+What is the footprint of the PubNub interface on PIC32 devices?
+(As of version @ Git commit 1f3cdbdae.)
+
+The pure footprint of the pubnub library itself is 14680 bytes in flash
+and the static RAM footprint is 252 bytes; several kilobytes of heap
+RAM memory are required during network communication.  The pubnubDemo
+shipped in the SDK is a typical example of a pubnub library user
+(that performs a single publish and then runs a continuous subscribe);
+its flash footprint is 4388 bytes, RAM footprint is 476 bytes.
+
+An alternative API pubnubStatic makes the library simpler to use by
+reducing some of its flexibility; the API itself has flash footprint
+of 1736 bytes and RAM footprint 1580 bytes.  An example app based
+on this API that allows continuous subscribe and continuous publishing
+would take extra 3428 bytes of flash and 8 bytes of RAM.  The total
+footprint of pubnubStatic-based app on top of pubnub library would
+be 5164 bytes of flash and 1588 bytes of RAM.
+
+Optionally, SSL communication is supported using the third-party
+CyaSSL embedded library. Unfortunately, it comes with a big footprint
+of 242592 bytes of flash (236 kilobytes!) and 4324 bytes of RAM. The
+SSL layer in the pubnub library then takes 2140 bytes of flash and
+16 bytes of RAM.
