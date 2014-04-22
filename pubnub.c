@@ -253,6 +253,7 @@ pubnub_done(struct pubnub *p)
 {
     if (p->state != PS_IDLE) {
         TCPDisconnect(p->socket);
+        TCPDisconnect(p->socket); // we may want to reuse the socket, RST!
 #if PUBNUB_SSL
         if (p->ssl) {
             CyaSSL_shutdown(p->ssl);
