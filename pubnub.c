@@ -311,7 +311,11 @@ pubnub_set_auth(struct pubnub *p, const char *auth)
 static bool
 pubnub_http_connect(struct pubnub *p)
 {
-    p->socket = TCPOpen((PTR_BASE) p->origin, TCP_OPEN_RAM_HOST, p->use_ssl ? 443 : 80, TCP_PURPOSE_PUBNUB_CLIENT);
+    p->socket = TCPOpen((PTR_BASE) p->origin, TCP_OPEN_RAM_HOST,
+#if PUBNUB_SSL
+		    p->use_ssl ? 443 :
+#endif
+		    80, TCP_PURPOSE_PUBNUB_CLIENT);
     if (p->socket == INVALID_SOCKET)
         return false;
     p->state = PS_CONNECT;
