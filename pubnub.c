@@ -240,30 +240,34 @@ pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key
     p->sub_timeout = 310;
 #if PUBNUB_SSL
     pubnub_set_origin(p, "https://pubsub.pubnub.com/");
+    p->ssl = NULL;
 #else
     pubnub_set_origin(p, "http://pubsub.pubnub.com/");
 #endif
     strcpy(p->timetoken, "0");
     p->uuid = NULL;
     p->auth = NULL;
+    p->socket = INVALID_SOCKET;
 }
 
 void
 pubnub_done(struct pubnub *p)
 {
-    if (p->state != PS_IDLE) {
+    if (p->socket != INVALID_SOCKET) {
         TCPDisconnect(p->socket);
         TCPDisconnect(p->socket); // we may want to reuse the socket, RST!
-#if PUBNUB_SSL
-        if (p->ssl) {
-            CyaSSL_shutdown(p->ssl);
-            CyaSSL_free(p->ssl);
-            p->ssl = NULL;
-        }
-#endif
+        p->socket = INVALID_SOCKET;
     }
+#if PUBNUB_SSL
+    if (p->ssl) {
+        CyaSSL_shutdown(p->ssl);
+        CyaSSL_free(p->ssl);
+        p->ssl = NULL;
+    }
+#endif
     if (p->http_reply) {
-        free(p->http_reply); p->http_reply = NULL;
+        free(p->http_reply);
+        p->http_reply = NULL;
     }
 }
 
@@ -312,14 +316,18 @@ pubnub_set_auth(struct pubnub *p, const char *auth)
 static bool
 pubnub_http_connect(struct pubnub *p)
 {
-    p->socket = TCPOpen((PTR_BASE) p->origin, TCP_OPEN_RAM_HOST,
+    if (p->socket == INVALID_SOCKET || !TCPIsConnected(p->socket)) {
+        p->socket = TCPOpen((PTR_BASE) p->origin, TCP_OPEN_RAM_HOST,
 #if PUBNUB_SSL
-		    p->use_ssl ? 443 :
+                            p->use_ssl ? 443 :
 #endif
-		    80, TCP_PURPOSE_PUBNUB_CLIENT);
-    if (p->socket == INVALID_SOCKET)
-        return false;
-    p->state = PS_CONNECT;
+                            80, TCP_PURPOSE_PUBNUB_CLIENT);
+        if (p->socket == INVALID_SOCKET)
+            return false;
+        p->state = PS_CONNECT;
+    } else {
+        p->state = PS_HTTPREQUEST;
+    }
     p->timer = TickGet();
     p->http_substate = 0;
     p->http_code = 0;
@@ -340,20 +348,6 @@ pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result)
     int http_code = p->http_code;
     p->http_code = 0;
 
-    if (p->socket != INVALID_SOCKET) {
-        TCPDisconnect(p->socket);
-        TCPDisconnect(p->socket); // we need to reuse the socket, RST!
-        p->socket = INVALID_SOCKET;
-    }
-
-#if PUBNUB_SSL
-    if (p->ssl) {
-        CyaSSL_shutdown(p->ssl);
-        CyaSSL_free(p->ssl);
-        p->ssl = NULL;
-    }
-#endif
-
     char *http_reply = p->http_reply;
     p->http_reply = NULL;
     void *cb = p->cb, *cbdata = p->cbdata;
@@ -364,6 +358,25 @@ pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result)
          * result. This can override PNR_OK or a different error
          * signaled later during parsing of the request. */
         result = PNR_HTTP_ERROR;
+    }
+
+    if (result != PNR_OK) {
+        /* Disconnect and clean up. In case of PNR_OK, we keep things
+         * open for the next request. */
+
+        if (p->socket != INVALID_SOCKET) {
+            TCPDisconnect(p->socket);
+            TCPDisconnect(p->socket); // we need to reuse the socket, RST!
+            p->socket = INVALID_SOCKET;
+        }
+
+#if PUBNUB_SSL
+        if (p->ssl) {
+            CyaSSL_shutdown(p->ssl);
+            CyaSSL_free(p->ssl);
+            p->ssl = NULL;
+        }
+#endif
     }
 
     p->internal_cb(p, result, http_code, http_reply, cb, cbdata);
@@ -444,7 +457,7 @@ pubnub_update_sendrequest(struct pubnub *p)
         p->http_substate++;
     }
     if (p->http_substate <= 4) {
-#define S "\r\nUser-Agent: PubNub-PIC32/0.1\r\nConnection: close\r\n\r\n"
+#define S "\r\nUser-Agent: PubNub-PIC32/0.1\r\nConnection: Keep-Alive\r\n\r\n"
         if (!pubnub_tcp_writestr(p, S, sizeof(S)-1))
             return true;
 #undef S
