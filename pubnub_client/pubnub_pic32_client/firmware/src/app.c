@@ -125,8 +125,6 @@ void APP_Initialize ( void )
     
     APP_Commands_Init();
 
-    /* doda istvan */
-    PubnubDemoInit();
 }
 
 
@@ -148,7 +146,7 @@ void APP_Tasks ( void )
     int                 i, nNets;
 
     /* dodao istvan */
-    PubnubDemoProcess();
+    PubnubStaticDemoProcess();
 
     /* Check the application's current state. */
     switch ( appData.state )
@@ -231,7 +229,12 @@ void APP_Tasks ( void )
 
         case APP_TCPIP_WAITING_FOR_COMMAND:
         {
-            if (APP_URL_Buffer[0] != '\0')
+           /* doda istvan */
+            PubnubStaticDemoInit();
+            appData.state =  APP_TCPIP_ERROR;
+
+            
+            /*if (APP_URL_Buffer[0] != '\0')
             {
                 TCPIP_DNS_RESULT result;
                 if (_APP_ParseUrl(APP_URL_Buffer, &appData.host, &appData.path))
@@ -265,7 +268,7 @@ void APP_Tasks ( void )
                 }
                 appData.state = APP_TCPIP_WAIT_ON_DNS;
                 APP_URL_Buffer[0] = '\0';
-            }
+            }*/
         }
         break;
 

@@ -21,6 +21,7 @@ void PubnubDemoResubscribe(void); // delayed subscirbe
 #define RESUB_DELAY 2 // TODO: Exponential backoff
 static uint32_t timer;
 static enum PubnubDemoNext {
+    PDN_INIT,
     PDN_START,
     PDN_SUBSCRIBE,
 } next;
@@ -31,21 +32,18 @@ static void
 flip_led(int n)
 {
     switch (n) {
-/*        case 0: LED0_IO ^= 1; break;
-        case 1: LED1_IO ^= 1; break;
-        case 2: LED2_IO ^= 1; break;
- */
+        case 0: BSP_LEDToggle(BSP_LED_1); break;
+        case 1: BSP_LEDToggle(BSP_LED_2); break;
+        case 2: BSP_LEDToggle(BSP_LED_3); break;
     }
 }
 static void
 set_led(int n, int s)
 {
     switch (n) {
-        /*
-        case 0: LED0_IO = s; break;
-        case 1: LED1_IO = s; break;
-        case 2: LED2_IO = s; break;
-         */
+        case 0: BSP_LEDStateSet(BSP_LED_1, s ? BSP_LED_STATE_ON : BSP_LED_STATE_OFF); break;
+        case 1: BSP_LEDStateSet(BSP_LED_2, s ? BSP_LED_STATE_ON : BSP_LED_STATE_OFF); break;
+        case 2: BSP_LEDStateSet(BSP_LED_3, s ? BSP_LED_STATE_ON : BSP_LED_STATE_OFF); break;
     }
 }
 
@@ -115,7 +113,7 @@ subscribe_cb(struct pubnub *p, enum pubnub_res result, int http_code,
 void
 PubnubDemoStart(void)
 {
-    if (!pubnub_publish(&pn, channel, "\"\\\"Hello world!\\\" she said from the PIC.\"", publish_cb, NULL))
+    if (!pubnub_publish(&pn, channel, "\"\\\"Hello Mile!\\\" she said from the PIC.\"", publish_cb, NULL))
         error(1, "publish initial", 5);
 }
 
@@ -153,6 +151,10 @@ PubnubDemoInit(void)
 
 void PubnubDemoProcess(void)
 {
+    if (PDN_INIT == next) {
+        return;
+    }
+    
     pubnub_update(&pn);
 
     /* XXX: What if the timer overflows? */

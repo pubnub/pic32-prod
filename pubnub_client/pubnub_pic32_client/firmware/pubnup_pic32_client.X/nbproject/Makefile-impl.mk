@@ -27,7 +27,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=pubnup_pic32_client.X
 
 # Active Configuration
-DEFAULTCONF=pic32mz_ec_sk
+DEFAULTCONF=pic32mx_eth_sk2
 CONF=${DEFAULTCONF}
 
 # All Configurations

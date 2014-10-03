@@ -1,18 +1,20 @@
 #include "pubnub.h"
 #include "pubnubStatic.h"
 
-char pubMsgBuf[256];
-bool bPublish;
-static bool bPublishOn;
 
-char subMsgBuf[256];
-bool bSubscribe;
+static char subMsgBuf[256];
+static bool bSubscribe;
 static bool bSubscribeOn;
 static bool bLeave;
 
 static struct pubnub pCtx, sCtx;
 static char pubChan[64], subChan[64];
 static uint32_t pubTimer, subTimer;
+
+static char pubMsgBuf[256];
+static bool bPublish;
+static bool bPublishOn;
+
 
 
 #define START_DELAY 10
@@ -93,7 +95,7 @@ PubnubStaticProcPublish(struct pubnub *pn)
 {
     pubnub_update(pn);
 
-    if (pubTimer != 0 && pubTimer > TickGet())
+    if (pubTimer != 0 && pubTimer > SYS_TMR_TickCountGet())
         return; // cool-down
     pubTimer = 0;
 
@@ -102,7 +104,7 @@ PubnubStaticProcPublish(struct pubnub *pn)
 
     if (!pubnub_publish(pn, pubChan, pubMsgBuf, publish_cb, NULL)) {
         error(1, "publish initial", 5);
-        pubTimer = SYS_TMR_TickGetGet() + RETRY_DELAY * SYS_TMR_TickCounterFrequencyGet();
+        pubTimer = SYS_TMR_TickCountGet() + RETRY_DELAY * SYS_TMR_TickCounterFrequencyGet();
     }
     bPublishOn = true;
 }
@@ -112,7 +114,7 @@ PubnubStaticProcSubscribe(struct pubnub *pn)
 {
     pubnub_update(pn);
 
-    if (subTimer != 0 && subTimer > TickGet())
+    if (subTimer != 0 && subTimer > SYS_TMR_TickCountGet())
         return; // cool-down
     subTimer = 0;
 
@@ -122,7 +124,7 @@ PubnubStaticProcSubscribe(struct pubnub *pn)
     bSubscribeOn = true;
     if (!pubnub_subscribe(pn, subChan, subscribe_cb, NULL)) {
         error(2, "subscribe initial", 5);
-        subTimer = SYS_TMR_TickCountsGet() + RETRY_DELAY * SYS_TMR_TickCounterFrequencyGet();
+        subTimer = SYS_TMR_TickCountGet() + RETRY_DELAY * SYS_TMR_TickCounterFrequencyGet();
     }
 }
 
@@ -133,10 +135,13 @@ PubnubStaticInit(const char *pubkey, const char *subkey,
 {
     pubnub_init(&pCtx, pubkey, subkey);
     pubnub_init(&sCtx, pubkey, subkey);
-    strncpy(pubChan, subChan_, sizeof(pubChan));
+    strncpy(pubChan, pubChan_, sizeof(pubChan));
     pubChan[sizeof(pubChan)-1] = 0;
     strncpy(subChan, subChan_, sizeof(subChan));
     subChan[sizeof(subChan)-1] = 0;
+
+    bPublish = bPublishOn = false;
+    bSubscribe = bSubscribeOn = bLeave = false;
 
     /* We will not do a pubnub call right away as the network
      * may not be configured properly at this moment yet (e.g.
@@ -182,4 +187,34 @@ PubnubStaticSubChan(const char *subChan_)
     /* At this point, bSubscribeOn == false, bSubscribe == false.
      * Therefore, the moment bLeave drops to false, we will resubscribe
      * again with the new subChan set. */
+}
+
+
+int PubnubStaticPublishf(char const *format, ...)
+{
+    const size_t msgBufLen = sizeof pubMsgBuf / sizeof pubMsgBuf[0];
+    va_list va;
+
+    if (bPublish) {
+        return -1;
+    }
+
+    va_start(va, format);
+    vsnprintf(pubMsgBuf, msgBufLen, format, va);
+    va_end(va);
+    bPublish = true;
+
+    return 0;
+}
+
+
+char const* PubnubStaticGetMsg()
+{
+    return bSubscribe ? subMsgBuf : NULL;
+}
+
+
+void PubnubStaticMarkMsgRead()
+{
+    bSubscribe = false;
 }

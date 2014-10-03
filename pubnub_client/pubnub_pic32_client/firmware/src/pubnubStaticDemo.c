@@ -13,40 +13,41 @@ static void
 set_led(int n, int s)
 {
     switch (n) {
-        /*
-        case 0: LED0_IO = s; break;
-        case 1: LED1_IO = s; break;
-        case 2: LED2_IO = s; break;
-         */
+        case 0: BSP_LEDStateSet(BSP_LED_1, s ? BSP_LED_STATE_ON : BSP_LED_STATE_OFF); break;
+        case 1: BSP_LEDStateSet(BSP_LED_2, s ? BSP_LED_STATE_ON : BSP_LED_STATE_OFF); break;
+        case 2: BSP_LEDStateSet(BSP_LED_3, s ? BSP_LED_STATE_ON : BSP_LED_STATE_OFF); break;
     }
 }
 
 
-void
-PubnubStaticDemoInit(void)
+void PubnubStaticDemoInit(void)
 {
     PubnubStaticInit(pubkey, subkey, channel, channel);
-    pubTimer = 0; // ASAP
+    pubTimer = 1; // ASAP
 }
 
-void PubnubStaticsDemoProcess(void)
+void PubnubStaticDemoProcess(void)
 {
+    char const *inmsg;
+
+    if (pubTimer == 0) {
+        return;
+    }
     PubnubStaticProcess();
 
-    /* Publish a ping message every 500 ms. */
-    if (pubTimer < SYS_TMR_TickCountGet() && !bPublish) {
-        strcpy(pubMsgBuf, "{\"ping\":1}");
-        bPublish = true;
-        pubTimer = SYS_TMR_TickCountGet() + SYS_TMR_TickCounterFrequencyGet()/2;
+    /* Publish a ping message every 10 seconds. */
+    if ((pubTimer < SYS_TMR_TickCountGet()) && (PubnubStaticPublishf("%s", "{\"ping, Mile, ping\":1}") == 0)) {
+        pubTimer = SYS_TMR_TickCountGet() + 10*SYS_TMR_TickCounterFrequencyGet();
     }
 
     /* Process any received message. */
-    if (bSubscribe) {
+    inmsg = PubnubStaticGetMsg();
+    if (inmsg != NULL) {
         int ledno, ledval;
-        if (sscanf(subMsgBuf, "{\"led\":{\"%d\":%d}}", &ledno, &ledval) == 2) {
+        if (sscanf(inmsg, "{\"led\":{\"%d\":%d}}", &ledno, &ledval) == 2) {
             /* Switch the given LED. */
             set_led(ledno, ledval);
         }
-        bSubscribe = false;
+        PubnubStaticMarkMsgRead();
     }
 }

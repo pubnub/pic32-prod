@@ -214,6 +214,7 @@ pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key
     p->ssl = NULL;
 #else
     pubnub_set_origin(p, "http://pubsub.pubnub.com/");
+//    pubnub_set_origin(p, "http://www.google.com/");
 #endif
     strcpy(p->timetoken, "0");
     p->uuid = NULL;
@@ -287,19 +288,30 @@ pubnub_set_auth(struct pubnub *p, const char *auth)
 static bool
 pubnub_http_connect(struct pubnub *p)
 {
-    IPV4_ADDR addr;
-    TCPIP_Helper_StringToIPAddress(p->origin, &addr);
-    if (p->socket == INVALID_SOCKET || !TCPIP_TCP_IsConnected(p->socket)) {
+    TCPIP_DNS_RESULT result = TCPIP_DNS_Resolve(p->origin, DNS_TYPE_A);
+    if (result == DNS_RES_NAME_IS_IPADDRESS)
+    {
+        IPV4_ADDR addr;
+
+        TCPIP_Helper_StringToIPAddress(p->origin, &addr);
+        if (p->socket == INVALID_SOCKET || !TCPIP_TCP_IsConnected(p->socket)) {
             p->socket = TCPIP_TCP_ClientOpen(IP_ADDRESS_TYPE_IPV4,
 #if PUBNUB_SSL
                             p->use_ssl ? 443 :
 #endif
                             80, (IP_MULTI_ADDRESS*)&addr);
-        if (p->socket == INVALID_SOCKET)
-            return false;
-        p->state = PS_CONNECT;
-    } else {
-        p->state = PS_HTTPREQUEST;
+            if (p->socket == INVALID_SOCKET)
+                return false;
+            p->state = PS_CONNECT;
+        } else {
+            p->state = PS_HTTPREQUEST;
+        }
+    }
+    else if (result != DNS_RES_OK) {
+        return false;
+    }
+    else {
+        p->state = PS_WAIT_DNS;
     }
     p->timer = SYS_TMR_TickCountGet();
     p->http_substate = 0;
@@ -586,6 +598,29 @@ pubnub_update(struct pubnub *p)
         case PS_IDLE:
             break;
 
+        case PS_WAIT_DNS:
+        {
+            IPV4_ADDR addr;
+            if (DNS_RES_OK == TCPIP_DNS_IsResolved(p->origin, &addr)) {
+                if (p->socket == INVALID_SOCKET || !TCPIP_TCP_IsConnected(p->socket)) {
+                    p->socket = TCPIP_TCP_ClientOpen(IP_ADDRESS_TYPE_IPV4,
+#if PUBNUB_SSL
+                                    p->use_ssl ? 443 :
+#endif
+                                    80, (IP_MULTI_ADDRESS*)&addr);
+                    if (p->socket == INVALID_SOCKET)
+                        break;
+                    p->state = PS_CONNECT;
+                } else {
+                    p->state = PS_HTTPREQUEST;
+                }
+                p->timer = SYS_TMR_TickCountGet();
+                p->http_substate = 0;
+                p->http_code = 0;
+                p->http_buf_len = 0;
+            }
+            break;
+        }
         case PS_CONNECT:
             if (!TCPIP_TCP_IsConnected(p->socket)) {
                 pubnub_update_test_timeout(p);

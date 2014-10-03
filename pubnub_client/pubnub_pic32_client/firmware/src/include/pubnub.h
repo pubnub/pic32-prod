@@ -206,6 +206,16 @@ bool pubnub_leave(struct pubnub *p, const char *channel,
 
 
 /** Internal Definitions */
+enum pubnub_state {
+    PS_IDLE,
+    PS_WAIT_DNS,
+    PS_CONNECT,
+    PS_SSLCONNECT,
+    PS_HTTPREQUEST,
+    PS_HTTPREPLY,
+    PS_HTTPBODY,
+    PS_PROCESS
+};
 
 /* The contents of struct pubnub is described here so that you do not have
  * to create contexts just on heap, but please treat the struct as a black box;
@@ -225,15 +235,7 @@ struct pubnub {
     int com_timeout;
 
     /* Network communication state */
-    enum pubnub_state {
-        PS_IDLE,
-        PS_CONNECT,
-        PS_SSLCONNECT,
-        PS_HTTPREQUEST,
-        PS_HTTPREPLY,
-        PS_HTTPBODY,
-        PS_PROCESS
-    } state;
+    enum pubnub_state state;
     uint32_t timer;
     TCP_SOCKET socket;
     union { char url[PUBNUB_BUF_MAXLEN]; char line[PUBNUB_BUF_MAXLEN]; } http_buf;
