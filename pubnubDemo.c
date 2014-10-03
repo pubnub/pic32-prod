@@ -156,7 +156,7 @@ void PubnubDemoProcess(void)
     pubnub_update(&pn);
 
     /* XXX: What if the timer overflows? */
-    if (timer != 0 && timer > TickGet()) {
+    if (timer != 0 && TickGet() > timer) {
         timer = 0;
         switch (next) {
             case PDN_START: PubnubDemoStart(); break;
