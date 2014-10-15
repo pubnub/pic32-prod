@@ -2,8 +2,19 @@
 
 #include "pubnub.h"
 
+#if PUBNUB_SSL && !PUBNUB_CYASSL
+#include <tcpip/ssl.h>
+#endif
 
-#if PUBNUB_SSL
+#if !defined(PUBNUB_SSL)
+#define PUBNUB_SSL 0
+#endif
+#if !defined(PUBNUB_CYASSL)
+#define PUBNUB_CYASSL 0
+#endif
+
+
+#if PUBNUB_CYASSL
 static const unsigned char ssl_cert_ca[] = {
     /* The self-signed certificate for petr.devbuild.pubnub.com */
     0x30, 0x82, 0x02, 0xa5, 0x30, 0x82, 0x02, 0x0e, 0x02, 0x09, 0x00, 0xd1,
@@ -66,8 +77,7 @@ static const unsigned char ssl_cert_ca[] = {
 };
 
 
-/* Custom recv/send callbacks for CyaSSL, as used in GenericCyaSSLClient. */
-
+/* Custom recv/send callbacks for SSL. */
 static int ssl_recvf(CYASSL* ssl, char* buf, int sz, void* vp) {
     int sockfd = *(int*) vp;
     if (TCPIP_TCP_GetIsReady(sockfd)) {
@@ -209,13 +219,16 @@ pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key
     p->subscribe_key = subscribe_key;
     p->timeout = 10;
     p->sub_timeout = 310;
-#if PUBNUB_SSL
-    pubnub_set_origin(p, "https://petr.devbuild.pubnub.com/");
-    p->ssl = NULL;
-#else
-    pubnub_set_origin(p, "http://pubsub.pubnub.com/");
-//    pubnub_set_origin(p, "http://www.google.com/");
+    if (PUBNUB_SSL) {
+        pubnub_set_origin(p, "https://petr.devbuild.pubnub.com/");
+#if PUBNUB_CYASSL
+            p->ssl = NULL;
 #endif
+    }
+    else {
+        pubnub_set_origin(p, "http://pubsub.pubnub.com/");
+    }
+
     strcpy(p->timetoken, "0");
     p->uuid = NULL;
     p->auth = NULL;
@@ -230,7 +243,7 @@ pubnub_done(struct pubnub *p)
         TCPIP_TCP_Disconnect(p->socket); // we may want to reuse the socket, RST!
         p->socket = INVALID_SOCKET;
     }
-#if PUBNUB_SSL
+#if PUBNUB_CYASSL
     if (p->ssl) {
         CyaSSL_shutdown(p->ssl);
         CyaSSL_free(p->ssl);
@@ -246,13 +259,10 @@ pubnub_done(struct pubnub *p)
 void
 pubnub_set_origin(struct pubnub *p, const char *origin)
 {
-#if PUBNUB_SSL
-    if (origin[4] == 's') {
+    if (PUBNUB_SSL && origin[4] == 's') {
         p->use_ssl = 1;
         strcpy(p->origin, origin + strlen("https://"));
-    } else
-#endif
-    {
+    } else {
         strcpy(p->origin, origin + strlen("http://"));
     }
     int namelen = strlen(p->origin);
@@ -296,10 +306,8 @@ pubnub_http_connect(struct pubnub *p)
         TCPIP_Helper_StringToIPAddress(p->origin, &addr);
         if (p->socket == INVALID_SOCKET || !TCPIP_TCP_IsConnected(p->socket)) {
             p->socket = TCPIP_TCP_ClientOpen(IP_ADDRESS_TYPE_IPV4,
-#if PUBNUB_SSL
-                            p->use_ssl ? 443 :
-#endif
-                            80, (IP_MULTI_ADDRESS*)&addr);
+                    (PUBNUB_SSL && p->use_ssl) ? 443 : 80,
+                    (IP_MULTI_ADDRESS*)&addr);
             if (p->socket == INVALID_SOCKET)
                 return false;
             p->state = PS_CONNECT;
@@ -355,7 +363,7 @@ pubnub_callback_and_idle(struct pubnub *p, enum pubnub_res result)
             p->socket = INVALID_SOCKET;
         }
 
-#if PUBNUB_SSL
+#if PUBNUB_CYASSL
         if (p->ssl) {
             CyaSSL_shutdown(p->ssl);
             CyaSSL_free(p->ssl);
@@ -378,19 +386,23 @@ pubnub_update_test_timeout(struct pubnub *p)
 }
 
 #if PUBNUB_SSL
-static bool
-pubnub_update_sslconnect(struct pubnub *p)
+static bool pubnub_update_sslconnect(struct pubnub *p)
 {
+#if !PUBNUB_CYASSL
+    if (TCPIP_TCPSSL_StillHandshaking(p->socket)) {
+        pubnub_update_test_timeout(p);
+        return false;
+    }
+    return true;
+#else
     if (!p->ssl) {
         p->ssl = CyaSSL_new(get_ssl_ctx());
         CyaSSL_SetIOReadCtx(p->ssl, &p->socket);
         CyaSSL_SetIOWriteCtx(p->ssl, &p->socket);
     }
-
     if (CyaSSL_connect(p->ssl) != SSL_SUCCESS) {
         int error = CyaSSL_get_error(p->ssl, 0);
-        if (error == SSL_ERROR_WANT_READ ||
-                error == SSL_ERROR_WANT_WRITE) {
+        if ((error == SSL_ERROR_WANT_READ) || (error == SSL_ERROR_WANT_WRITE)) {
             /* Operation still in progress. */
             pubnub_update_test_timeout(p);
             return false;
@@ -403,6 +415,7 @@ pubnub_update_sslconnect(struct pubnub *p)
 
     /* Connected. */
     return true;
+#endif
 }
 #endif
 
@@ -416,10 +429,10 @@ pubnub_update_sendrequest(struct pubnub *p)
         return false;
 
     if (p->http_substate <= 0) {
-#define S "GET "
-        if (!pubnub_tcp_writestr(p, S, sizeof(S)-1))
+#define S_ "GET "
+        if (!pubnub_tcp_writestr(p, S_, sizeof(S_)-1))
             return true;
-#undef S
+#undef S_
         p->http_substate++;
     }
     if (p->http_substate <= 1) {
@@ -429,10 +442,10 @@ pubnub_update_sendrequest(struct pubnub *p)
         p->http_substate++;
     }
     if (p->http_substate <= 2) {
-#define S " HTTP/1.1\r\nHost: "
-        if (!pubnub_tcp_writestr(p, S, sizeof(S)-1))
+#define S_ " HTTP/1.1\r\nHost: "
+        if (!pubnub_tcp_writestr(p, S_, sizeof(S_)-1))
             return true;
-#undef S
+#undef S_
         p->http_substate++;
     }
     if (p->http_substate <= 3) {
@@ -442,10 +455,10 @@ pubnub_update_sendrequest(struct pubnub *p)
         p->http_substate++;
     }
     if (p->http_substate <= 4) {
-#define S "\r\nUser-Agent: PubNub-PIC32/0.1\r\nConnection: Keep-Alive\r\n\r\n"
-        if (!pubnub_tcp_writestr(p, S, sizeof(S)-1))
+#define S_ "\r\nUser-Agent: PubNub-PIC32/0.1\r\nConnection: Keep-Alive\r\n\r\n"
+        if (!pubnub_tcp_writestr(p, S_, sizeof(S_)-1))
             return true;
-#undef S
+#undef S_
         p->state = PS_HTTPREPLY;
         p->http_substate = 0;
     }
@@ -604,10 +617,8 @@ pubnub_update(struct pubnub *p)
             if (DNS_RES_OK == TCPIP_DNS_IsResolved(p->origin, &addr)) {
                 if (p->socket == INVALID_SOCKET || !TCPIP_TCP_IsConnected(p->socket)) {
                     p->socket = TCPIP_TCP_ClientOpen(IP_ADDRESS_TYPE_IPV4,
-#if PUBNUB_SSL
-                                    p->use_ssl ? 443 :
-#endif
-                                    80, (IP_MULTI_ADDRESS*)&addr);
+                            (PUBNUB_SSL && p->use_ssl) ? 443 : 80,
+                            (IP_MULTI_ADDRESS*)&addr);
                     if (p->socket == INVALID_SOCKET)
                         break;
                     p->state = PS_CONNECT;
@@ -626,24 +637,23 @@ pubnub_update(struct pubnub *p)
                 pubnub_update_test_timeout(p);
                 break;
             }
-#if !PUBNUB_SSL
-            p->state = PS_HTTPREQUEST;
-            /* fall-through to PS_HTTPREQUEST */
-
-#else
-            if (!p->use_ssl) {
+            if (!PUBNUB_SSL && !p->use_ssl) {
                 p->state = PS_HTTPREQUEST;
-                break;
             }
-            p->state = PS_SSLCONNECT;
-            /* fall-through */
+            else {
+                if (!PUBNUB_CYASSL && !TCPIP_TCPSSL_ClientStart(p->socket, NULL)) {
+                    break;
+                }
+                p->state = PS_SSLCONNECT;
+            }
+            break;
 
         case PS_SSLCONNECT:
-            if (pubnub_update_sslconnect(p))
+            if (pubnub_update_sslconnect(p)) {
                 p->state = PS_HTTPREQUEST;
+            }
             break;
-#endif
-
+            
         case PS_HTTPREQUEST:
             if (pubnub_update_sendrequest(p))
                 TCPIP_TCP_Flush(p->socket);
@@ -741,11 +751,7 @@ pubnub_subscribe_icb(struct pubnub *p, enum pubnub_res result, int http_code,
 {
     if (result != PNR_OK) {
 error:
-#ifdef PUBNUB_MISSMSG_OK
-        if (1) {
-#else
-        if (result == PNR_FORMAT_ERROR) {
-#endif
+        if (PUBNUB_MISSMSG_OK || (result == PNR_FORMAT_ERROR)) {
             /* In case of PubNub protocol error, abort an ongoing subscribe
              * and start over. This means some messages were lost, but allows
              * us to recover from bad situations, e.g. too many messages

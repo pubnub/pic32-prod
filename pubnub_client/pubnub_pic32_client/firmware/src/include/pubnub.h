@@ -4,16 +4,11 @@
 #include <stdbool.h>
 
 
-
 /* ubacio istvan 14 sep 2014 */
 typedef unsigned long PTR_BASE;
-//#include "GenericTypeDefs.h"
-//#include "TCPIPConfig.h"
-//#include "StackTsk.h"
 
 
-
-#include "../../../../../../framework/tcpip/tcpip.h"
+#include <tcpip/tcpip.h>
 
 /* Maximum length of the HTTP buffer. This is a major component of the
  * memory size of the whole pubnub context, but it is also an upper
@@ -41,13 +36,23 @@ typedef unsigned long PTR_BASE;
  * PUBNUB_REPLY_MAXLEN overrun described above. */
 #define PUBNUB_MISSMSG_OK 1
 
-/* If #defined, the PubNub implementation will support SSL (https) connections
- * using the CyaSSL library.  The *.pubnub.com server certificate is currently
+/* If #defined to anything but 0, the PubNub implementation will support SSL
+ * (https) connections*/
+#define PUBNUB_SSL 1
+
+/* If #defined to anything but 0, instead of the Harmony TCP/IP, we'll be using
+ * the CyaSSL (provided as "third-party" in Harmony).
+ * The *.pubnub.com server certificate is currently
  * hardcoded in pubnub.c; a more future-proof SSL certificate verification
  * is still a TODO. */
-//#define PUBNUB_SSL 1
-#if PUBNUB_SSL
-#include "../../../../../../framework/crypto/src/ssl.h"
+//#define PUBNUB_CYASSL 1
+
+#if !defined(PUBNUB_SSL) && PUBNUB_CYASSL
+#define PUBNUB_SSL 1
+#endif
+
+#if PUBNUB_CYASSL
+#include <cyassl/cyassl.h>
 #endif
 
 /* The PubNub library is designed for cooperative multi-tasking as is the
@@ -252,8 +257,10 @@ struct pubnub {
 
 #if PUBNUB_SSL
     /* SSL state */
-    BYTE use_ssl;
-    CYASSL *ssl;
+    uint8_t use_ssl;
+#if PUBNUB_CYASSL
+    CyaSSL *ssl;
+#endif
 #endif
 };
 
