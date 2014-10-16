@@ -220,7 +220,7 @@ pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key
     p->timeout = 10;
     p->sub_timeout = 310;
     if (PUBNUB_SSL) {
-        pubnub_set_origin(p, "https://petr.devbuild.pubnub.com/");
+        pubnub_set_origin(p, "https://pubsub.pubnub.com/");
 #if PUBNUB_CYASSL
             p->ssl = NULL;
 #endif
@@ -648,12 +648,14 @@ pubnub_update(struct pubnub *p)
             }
             break;
 
+#if PUBNUB_SSL
         case PS_SSLCONNECT:
             if (pubnub_update_sslconnect(p)) {
                 p->state = PS_HTTPREQUEST;
             }
             break;
-            
+#endif
+
         case PS_HTTPREQUEST:
             if (pubnub_update_sendrequest(p))
                 TCPIP_TCP_Flush(p->socket);

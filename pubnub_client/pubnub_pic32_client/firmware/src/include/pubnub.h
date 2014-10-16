@@ -255,12 +255,10 @@ struct pubnub {
      * These values are valid only when http_reply != NULL. */
     unsigned short msg_ofs, msg_end, chan_ofs, chan_end;
 
-#if PUBNUB_SSL
     /* SSL state */
     uint8_t use_ssl;
 #if PUBNUB_CYASSL
     CyaSSL *ssl;
-#endif
 #endif
 };
 
