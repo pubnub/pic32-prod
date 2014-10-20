@@ -324,6 +324,9 @@
             <itemPath>../../../../../framework/tcpip/src/tcpip_notify.c</itemPath>
             <itemPath>../../../../../framework/tcpip/src/tcpip_packet.c</itemPath>
             <itemPath>../../../../../framework/tcpip/src/ipv4.c</itemPath>
+            <itemPath>../../../../../framework/tcpip/src/ssl.c</itemPath>
+            <itemPath>../../../../../framework/tcpip/src/arcfour.c</itemPath>
+            <itemPath>../../../../../framework/tcpip/src/rsa.c</itemPath>
           </logicalFolder>
           <logicalFolder name="system" displayName="system" projectFiles="true">
             <itemPath>../../../../../framework/tcpip/src/system/system_debug.c</itemPath>
@@ -1535,7 +1538,7 @@
         <platformTool>PKOBSKDEPlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>1.33</languageToolchainVersion>
-        <platform>3</platform>
+        <platform>2</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
