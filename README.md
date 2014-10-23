@@ -47,11 +47,11 @@ symbols:
 Refer to pubnub.h for detailed description of those. The configurations
 are:
 
-a) no SSL
-b) Use Harmony SSL - at the time of this writing, this is not useful,
+1. no SSL
+2. Use Harmony SSL - at the time of this writing, this is not useful,
 	as Harmony SSL only supports SSLv3, which Pubnub doesn't support
 	(any more)
-c) Use CyaSSL - this is the library supplied with Harmony under Third
+3. Use CyaSSL - this is the library supplied with Harmony under Third
 	Party directory, is full featured, but, has a rather large
 	memory footprint
 
