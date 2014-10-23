@@ -641,7 +641,7 @@ pubnub_update(struct pubnub *p)
                 p->state = PS_HTTPREQUEST;
             }
             else {
-                if (!PUBNUB_CYASSL && !TCPIP_TCPSSL_ClientStart(p->socket, NULL)) {
+                if (PUBNUB_SSL && !PUBNUB_CYASSL && !TCPIP_TCPSSL_ClientStart(p->socket, NULL)) {
                     break;
                 }
                 p->state = PS_SSLCONNECT;

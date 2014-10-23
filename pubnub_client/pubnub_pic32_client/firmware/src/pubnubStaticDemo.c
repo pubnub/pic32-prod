@@ -1,5 +1,5 @@
 #include "pubnub.h"
-#include "pubnubDemo.h"
+#include "pubnubStaticDemo.h"
 #include "pubnubStatic.h"
 
 static const char pubkey[] = "demo";

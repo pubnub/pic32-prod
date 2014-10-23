@@ -3,17 +3,15 @@
     <configuration>
         <Harmony xmlns="Harmony" MHC="true"/>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-            <name>pubnub_pic32_client</name>
-            <creation-uuid>e51023e9-3A48-44ef-bf6f-29d8d253e535</creation-uuid>
+            <name>pubnub_pic32_lib</name>
+            <creation-uuid>e51023e9-3A48-44ef-bf6f-29d8d253e553</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>
             <cpp-extensions/>
             <header-extensions>h</header-extensions>
             <asminc-extensions/>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
-            <make-dep-projects>
-                <make-dep-project>../../lib/pubnup_pic32_lib.X</make-dep-project>
-            </make-dep-projects>
+            <make-dep-projects/>
         </data>
     </configuration>
 </project>

@@ -1,0 +1,17 @@
+mainmenu "MPLAB Harmony Configuration"
+
+
+menu "Application Configuration"
+
+config APP_CONFIG
+    bool "Documentation"
+    default y
+    ---help---
+    IDH_HTML_APPS_TCPIP_TCPIP_TCP_Client
+    ---endhelp---
+
+endmenu
+
+
+source "$HARMONY_VERSION_PATH/config/harmony.hconfig"
+

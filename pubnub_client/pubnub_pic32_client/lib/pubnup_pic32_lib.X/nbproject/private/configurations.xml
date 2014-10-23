@@ -3,7 +3,7 @@
   <projectmakefile>Makefile</projectmakefile>
   <defaultConf>1</defaultConf>
   <confs>
-    <conf name="pic32mz_ec_sk" type="2">
+    <conf name="pic32mz_ec_sk" type="3">
       <platformToolSN></platformToolSN>
       <languageToolchainDir>/opt/microchip/xc32/v1.33/bin</languageToolchainDir>
       <mdbdebugger version="1">
@@ -21,7 +21,7 @@
         </environment>
       </runprofile>
     </conf>
-    <conf name="pic32mx_eth_sk" type="2">
+    <conf name="pic32mx_eth_sk" type="3">
       <platformToolSN></platformToolSN>
       <languageToolchainDir>/opt/microchip/xc32/v1.33/bin</languageToolchainDir>
       <mdbdebugger version="1">
@@ -39,7 +39,7 @@
         </environment>
       </runprofile>
     </conf>
-    <conf name="pic32mx_eth_sk2" type="2">
+    <conf name="pic32mx_eth_sk2" type="3">
       <platformToolSN></platformToolSN>
       <languageToolchainDir>/opt/microchip/xc32/v1.33/bin</languageToolchainDir>
       <mdbdebugger version="1">

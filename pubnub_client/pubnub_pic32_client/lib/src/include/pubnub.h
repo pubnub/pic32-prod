@@ -3,11 +3,6 @@
 
 #include <stdbool.h>
 
-
-/* ubacio istvan 14 sep 2014 */
-typedef unsigned long PTR_BASE;
-
-
 #include <tcpip/tcpip.h>
 
 /* Maximum length of the HTTP buffer. This is a major component of the
@@ -38,7 +33,7 @@ typedef unsigned long PTR_BASE;
 
 /* If #defined to anything but 0, the PubNub implementation will support SSL
  * (https) connections*/
-#define PUBNUB_SSL 1
+#define PUBNUB_SSL 0
 
 /* If #defined to anything but 0, instead of the Harmony TCP/IP, we'll be using
  * the CyaSSL (provided as "third-party" in Harmony).

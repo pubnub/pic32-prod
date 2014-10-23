@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pic32mz_ec_sk>
+  <HarmonyPath path="../../.."/>
+  <ForceOptimization flag="true"/>
+  <Files>
+    <Entry>
+      <Name>system_definitions.h</Name>
+      <Checksum>4D7532D7CC03D6F1F2C929BAEC06CBAB</Checksum>
+    </Entry>
+    <Entry>
+      <Name>system_init.c</Name>
+      <Checksum>B6A13E3C2C53B28A4095A4728D327A99</Checksum>
+    </Entry>
+    <Entry>
+      <Name>system_tasks.c</Name>
+      <Checksum>F6CC798AB4AACBDA87C8A8131B2438FC</Checksum>
+    </Entry>
+    <Entry>
+      <Name>system_config.h</Name>
+      <Checksum>5763302FB2B1D1CDFA087AF21D670687</Checksum>
+    </Entry>
+    <Entry>
+      <Name>system_interrupt.c</Name>
+      <Checksum>CB58F0EE825CD98BDA9FFC2E9D843DD1</Checksum>
+    </Entry>
+  </Files>
+</pic32mz_ec_sk>
