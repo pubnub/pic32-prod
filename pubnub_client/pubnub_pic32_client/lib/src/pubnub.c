@@ -883,11 +883,13 @@ pubnub_subscribe(struct pubnub *p, const char *channel,
     p->http_content_length = 0;
 
     p->http_buf_len = snprintf(p->http_buf.url, sizeof(p->http_buf.url),
-            "/subscribe/%s/%s/0/%s?" "%s%s" "%s%s%s", p->subscribe_key,
-            channel, p->timetoken,
+            "/subscribe/%s/%s/0/%s?" "%s%s" "%s%s%s" "&pnsdk=PubNub-PIC32-%s%%2F%s",
+            p->subscribe_key, channel, p->timetoken,
             p->uuid ? "uuid=" : "", p->uuid ? p->uuid : "",
             p->uuid && p->auth ? "&" : "",
-            p->auth ? "auth=" : "", p->auth ? p->auth : "");
+            p->auth ? "auth=" : "", p->auth ? p->auth : "",
+            "Harmony", "1.1"
+            );
 
     p->cb = cb; p->cbdata = cb_data;
     p->internal_cb = pubnub_subscribe_icb;
