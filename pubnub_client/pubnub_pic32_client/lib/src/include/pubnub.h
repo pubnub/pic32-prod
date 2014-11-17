@@ -8,9 +8,7 @@
 /* Maximum length of the HTTP buffer. This is a major component of the
  * memory size of the whole pubnub context, but it is also an upper
  * bound on URL-encoded form of published message, so if you need to
- * construct big messages, you may need to raise this.  N.B. you also
- * need to appropriately raise TX buffer size in PUBNUB_SOCKET_INITIALIZER
- * of pubnubConfig.h. */
+ * construct big messages, you may need to raise this.  */
 #ifndef PUBNUB_BUF_MAXLEN
 #define PUBNUB_BUF_MAXLEN 256
 #endif
