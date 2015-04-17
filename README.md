@@ -1,6 +1,46 @@
 Pubnub PIC32 Harmony library
 ============================
 
+This is the Pubnub client library for the Microchip Harmony framework.
+
+The Pubnub Harmony library is designed and tested for PIC32. It is
+possible that it may work on other PIC families supported by Harmony,
+but that has not been tested.
+
+
+Getting started
+---------------
+
+Unzip/copy the contents of the library package to your Harmony
+`apps` directory. For example, on Linux this would be:
+
+	~/microchip/harmony/v1_03_01/apps
+
+On Windows, this would be:
+
+	c:\microchip\harmony\v1_03_01\apps
+
+Of course, you may unzip/copy to some other version of Harmony
+(other than `v1_03_01`).
+
+This will create following basic directory structure under `apps`:
+
+	pubnub_client
+		|
+		+--pubnub_pic32_client
+			|
+			+--lib
+			+--firmware
+
+The `lib` directory contains the Pubnub client Harmony (static) library.
+The `firmware` directory contains a sample project you can load to
+your MPLABX IDE and try it "out of the box".
+
+
+
+Adding PIC32 Harmony library to Your Project
+--------------------------------------------
+
 To add Pubnub PIC32 Harmony library to your project, you have several options:
 
 1. Add the library project
@@ -20,15 +60,15 @@ libraries in the MPLAB X IDE. In this case, library will not be rebuilt
 for each of your configurations. Also, you will have to add the headers
 to your project yourself.
 
-And as the last option, you may copy the files from the library
-(at the moment of this writing, those are: pubnub.c pubnub.h
+As the last option, you may copy the source files from the library (at
+the moment of this writing, those are: pubnub.c pubnub.h
 pubnubStatic.c pubnubStatic.h) to your project. This is similar to
 option 1., but more work.
 
 In any case, you have to link against the Harmony library, because
-that is what Pubnub PIC32 Harmony library uses. We use the TCPIP,
-TCPIP_DNS, SYS_TMR, and, optionally, TCPIP_SSL modules from Harmony.
-Keep in mind that these modules use other Harmony modules.
+that is what Pubnub PIC32 Harmony library uses. We use the `TCPIP`,
+`TCPIP_DNS`, `SYS_TMR`, and, optionally, `TCPIP_SSL` modules from
+Harmony.  Keep in mind that these modules use other Harmony modules.
 
 The way you link against Harmony is up to you - most Harmony examples
 have the source files included in the project, but you may define your
@@ -68,21 +108,11 @@ pubnub.h.
 Pubnub Demo
 -----------
 
-Depending on licensing, we may or may not be able to ship a 
-self contained demo.
-
-Here's how you can make the APP yourself:
-
-1. Start with the TCPIP Client example from Harmony
-2. Add the Pubnub in any of the 3 options mentioned above
-3. Add the pubnubDemo.h pubnubDemo.c and/or pubnubStaticDemo.h pubnubStaticDemo.c
-4. Replace the App.c with "our" App.c - it uses one of the interfaces, you may easily
-	switch to the other
-5. If you wish, you may delete AppCommands.h AppCommands.c
-
-You may choose the pubnubDemo or pubnubStatic demo, each demonstrating the use
-of the API "variant". Static is easier to use, but less flexible. Also, since it
-uses the more general "dynamic" API, it uses a little more memory.
+Out of the box, the demo uses the (simpler) "static" Pubnub
+interface. If you wish to try out the "dynamic" Pubnub interface, just
+link `pubnubDemo.c` instead of `pubnubStaticDemo.c` and change calls
+from `PubnubStaticDemoInit()` to `PubnubDemoInit()` and from
+`PubnubStaticDemoProcess()` to `PubnubDemoProcess()`.
 
 The easiest way to use the demo is to open the Web developer console on Pubnub
 website. But please be sure to choose the right channel.
