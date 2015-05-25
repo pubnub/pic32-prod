@@ -75,23 +75,18 @@ void SYS_Tasks ( void )
 {
     /* Maintain the state machines of all library modules executing polled in
     the system. */
-    
+
     /* Maintain system services */
-        SYS_DEVCON_Tasks(sysObj.sysDevcon);
+    SYS_DEVCON_Tasks(sysObj.sysDevcon);
     SYS_TMR_Tasks(sysObj.sysTmr);
-    
+
     /* Maintain Device Drivers */
     DRV_TMR_Tasks(sysObj.drvTmr0);
-
-	
-	
-
     /* Maintain the TCPIP Native Command Stack */
-    SYS_COMMAND_TASK();
-    
+    SYS_CMD_Tasks();
     /* Maintain the TCP/IP Stack*/
     TCPIP_STACK_Task(sysObj.tcpip);
-    
+
     /* Maintain the application's state machine. */
     APP_Tasks();
 }

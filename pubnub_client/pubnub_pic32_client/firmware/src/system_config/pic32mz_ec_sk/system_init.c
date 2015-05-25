@@ -48,8 +48,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include "system_config.h"
-#include "app.h"
 #include "system_definitions.h"
+#include "app.h"
 
 
 // ****************************************************************************
@@ -128,6 +128,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
+//<editor-fold defaultstate="collapsed" desc="DRV_Timer Configuration">
 
 /*** TMR Driver Initialization Data ***/
 
@@ -141,7 +142,8 @@ const DRV_TMR_INIT drvTmr0InitData =
     .interruptSource = DRV_TMR_INTERRUPT_SOURCE_IDX0,
     .asyncWriteEnable = false,
 };
-
+// </editor-fold>
+//<editor-fold defaultstate="collapsed" desc="SYS_TMR Configuration">
 /*** TMR Service Initialization Data ***/
 const SYS_TMR_INIT sysTmrInitData =
 {
@@ -150,9 +152,7 @@ const SYS_TMR_INIT sysTmrInitData =
     .tmrFreq = 1000, 
 };
 
-
-
-
+// </editor-fold>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -160,66 +160,54 @@ const SYS_TMR_INIT sysTmrInitData =
 // *****************************************************************************
 // *****************************************************************************
 
+//<editor-fold defaultstate="collapsed" desc="TCPIP Stack Configuration">
 
 /*** ARP Service Initialization Data ***/
 const TCPIP_ARP_MODULE_CONFIG tcpipARPInitData =
 { 
-    .cacheEntries       = 5, 
-    .deleteOld          = true, 
-    .entrySolvedTmo     = 1200, 
-    .entryPendingTmo    = 60, 
-    .entryRetryTmo      = 2, 
-    .permQuota          = 50, 
-    .purgeThres         = 75, 
-    .purgeQuanta        = 1, 
-    .retries            = 3, 
-    .gratProbeCount     = 1,
+    .cacheEntries       = TCPIP_ARP_CACHE_ENTRIES,     
+    .deleteOld          = TCPIP_ARP_CACHE_DELETE_OLD,    
+    .entrySolvedTmo     = TCPIP_ARP_CACHE_SOLVED_ENTRY_TMO, 
+    .entryPendingTmo    = TCPIP_ARP_CACHE_PENDING_ENTRY_TMO, 
+    .entryRetryTmo      = TCPIP_ARP_CACHE_PENDING_RETRY_TMO, 
+    .permQuota          = TCPIP_ARP_CACHE_PERMANENT_QUOTA, 
+    .purgeThres         = TCPIP_ARP_CACHE_PURGE_THRESHOLD, 
+    .purgeQuanta        = TCPIP_ARP_CACHE_PURGE_QUANTA, 
+    .retries            = TCPIP_ARP_CACHE_ENTRY_RETRIES, 
+    .gratProbeCount     = TCPIP_ARP_GRATUITOUS_PROBE_COUNT,
 };
-
-
-
-
 
 
 
 /*** UDP Sockets Initialization Data ***/
 const TCPIP_UDP_MODULE_CONFIG tcpipUDPInitData =
 {
-    .nSockets       = 10,
-    .sktTxBuffSize  = 512, 
-    .poolBuffers    = 4,
-    .poolBufferSize = 512,
+    .nSockets       = TCPIP_UDP_MAX_SOCKETS,
+    .sktTxBuffSize  = TCPIP_UDP_SOCKET_DEFAULT_TX_SIZE, 
+    .poolBuffers    = TCPIP_UDP_SOCKET_POOL_BUFFERS,
+    .poolBufferSize = TCPIP_UDP_SOCKET_POOL_BUFFER_SIZE,
 };
-
 
 /*** TCP Sockets Initialization Data ***/
 const TCPIP_TCP_MODULE_CONFIG tcpipTCPInitData =
 {
-    .nSockets       = 10,
-    .sktTxBuffSize  = 512, 
-    .sktRxBuffSize  = 512,
+    .nSockets       = TCPIP_TCP_MAX_SOCKETS,
+    .sktTxBuffSize  = TCPIP_TCP_SOCKET_DEFAULT_TX_SIZE, 
+    .sktRxBuffSize  = TCPIP_TCP_SOCKET_DEFAULT_RX_SIZE,
 };
-
-
-
-
 
 
 
 
 /*** DHCP client Initialization Data ***/
 const TCPIP_DHCP_MODULE_CONFIG tcpipDHCPInitData =
-{ 
-    .dhcpEnable		= true,
-    .dhcpTmo		= 2,
-    .dhcpCliPort    	= 68,
-    .dhcpSrvPort	= 67,
+{     
+    .dhcpEnable     = TCPIP_DHCP_CLIENT_ENABLED,   
+    .dhcpTmo        = TCPIP_DHCP_TIMEOUT,
+    .dhcpCliPort    = TCPIP_DHCP_CLIENT_CONNECT_PORT,
+    .dhcpSrvPort    = TCPIP_DHCP_SERVER_LISTEN_PORT,
 
 };
-
-
-
-
 
 
 
@@ -227,17 +215,23 @@ const TCPIP_DHCP_MODULE_CONFIG tcpipDHCPInitData =
 const TCPIP_NBNS_MODULE_CONFIG tcpipNBNSInitData =
 { 
 };
+
 /*** ETH MAC Initialization Data ***/
 const TCPIP_MODULE_MAC_PIC32INT_CONFIG tcpipMACPIC32INTInitData =
 { 
-    .nTxDescriptors		= 8,
-    .rxBuffSize		    	= 1536,
-    .nRxDescriptors     	= 6,
-    .ethFlags		    	= 0x11f,
-    .phyFlags		   	= 0x10,
-    .linkInitDelay		= 500,
-    .phyAddress		    	= 0,
+    .nTxDescriptors         = TCPIP_EMAC_TX_DESCRIPTORS,
+    .rxBuffSize             = TCPIP_EMAC_RX_BUFF_SIZE,
+    .nRxDescriptors         = TCPIP_EMAC_RX_DESCRIPTORS,
+    .nRxDedicatedBuffers    = TCPIP_EMAC_RX_DEDICATED_BUFFERS,
+    .nRxInitBuffers         = TCPIP_EMAC_RX_INIT_BUFFERS,
+    .rxLowThreshold         = TCPIP_EMAC_RX_LOW_THRESHOLD,
+    .rxLowFill              = TCPIP_EMAC_RX_LOW_FILL,
+    .ethFlags               = TCPIP_EMAC_ETH_OPEN_FLAGS,
+    .phyFlags               = TCPIP_EMAC_PHY_CONFIG_FLAGS,
+    .linkInitDelay          = TCPIP_EMAC_PHY_LINK_INIT_DELAY,
+    .phyAddress             = TCPIP_EMAC_PHY_ADDRESS,
 };
+
 
 
 /*** Zeroconfig initialization data ***/
@@ -249,13 +243,15 @@ const ZCLL_MODULE_CONFIG tcpipZCLLInitData =
 
 /*** DNS Client Initialization Data ***/
 const TCPIP_DNS_CLIENT_MODULE_CONFIG tcpipDNSClientInitData =
-{ 
-    .deleteOldLease			= true,
-    .cacheEntries			= 5,
-    .entrySolvedTmo			= 0,    
-    .IPv4EntriesPerDNSName 	= 5,
-	.dnsIpAddressType 		= IP_ADDRESS_TYPE_IPV4,
+{
+    .deleteOldLease         = TCPIP_DNS_CLIENT_DELETE_OLD_ENTRIES,
+    .cacheEntries           = TCPIP_DNS_CLIENT_CACHE_ENTRIES,
+    .entrySolvedTmo         = TCPIP_DNS_CLIENT_CACHE_ENTRY_TMO,    
+    .IPv4EntriesPerDNSName  = TCPIP_DNS_CLIENT_CACHE_PER_IPV4_ADDRESS,
+    .dnsIpAddressType       = TCPIP_DNS_CLIENT_OPEN_ADDRESS_TYPE,
+    .IPv6EntriesPerDNSName  = TCPIP_DNS_CLIENT_CACHE_PER_IPV6_ADDRESS,
 };
+
 
 
 
@@ -328,77 +324,7 @@ SYS_MODULE_OBJ TCPIP_STACK_Init()
     return TCPIP_STACK_Initialize(0, &tcpipInit.moduleInit);
 }
 
-/*********************************************************************
- * Function:        static void APP_ETHMAC_PinInitialize(void)
- *
- * PreCondition:    None
- *
- * Input:	    None
- *
- * Output:          Sets the Ethernet MAC pins
- *
- * Overview:        This function sets the MAC pin configurations 
- ********************************************************************/
-static void APP_ETHMAC_PinInitialize(void)
-{
-    //MDC
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_OUTPUT,
-                                 PORT_CHANNEL_D,
-                                 PORTS_BIT_POS_11);
-    //MDIO
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_INPUT,
-                                 PORT_CHANNEL_J,
-                                 PORTS_BIT_POS_1);
-    //TXEN
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_OUTPUT,
-                                 PORT_CHANNEL_D,
-                                 PORTS_BIT_POS_6);
-    //TXD0
-    SYS_PORTS_PinModeSelect(PORTS_ID_0, PORTS_ANALOG_PIN_35, PORTS_PIN_MODE_DIGITAL);
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_OUTPUT,
-                                 PORT_CHANNEL_J,
-                                 PORTS_BIT_POS_8);
-    //TXD1
-    SYS_PORTS_PinModeSelect(PORTS_ID_0, PORTS_ANALOG_PIN_36, PORTS_PIN_MODE_DIGITAL);
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_OUTPUT,
-                                 PORT_CHANNEL_J,
-                                 PORTS_BIT_POS_9);
-    //RXCLK
-    SYS_PORTS_PinModeSelect(PORTS_ID_0, PORTS_ANALOG_PIN_37, PORTS_PIN_MODE_DIGITAL);
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_INPUT,
-                                 PORT_CHANNEL_J,
-                                 PORTS_BIT_POS_11);
-    //RXDV
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_INPUT,
-                                 PORT_CHANNEL_H,
-                                 PORTS_BIT_POS_13);
-    //RXD0
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_INPUT,
-                                 PORT_CHANNEL_H,
-                                 PORTS_BIT_POS_8);
-    //RXD1
-    SYS_PORTS_PinModeSelect(PORTS_ID_0, PORTS_ANALOG_PIN_41, PORTS_PIN_MODE_DIGITAL);
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_INPUT,
-                                 PORT_CHANNEL_H,
-                                 PORTS_BIT_POS_5);
-
-    //RXERR
-    SYS_PORTS_PinModeSelect(PORTS_ID_0, PORTS_ANALOG_PIN_40, PORTS_PIN_MODE_DIGITAL);
-    SYS_PORTS_PinDirectionSelect(PORTS_ID_0,
-                                 SYS_PORTS_DIRECTION_INPUT,
-                                 PORT_CHANNEL_H,
-                                 PORTS_BIT_POS_4);
-}
-
+// </editor-fold>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -415,20 +341,8 @@ SYSTEM_OBJECTS sysObj;
 // *****************************************************************************
 // *****************************************************************************
 
-// *****************************************************************************
-/* System Clock Initialization Data
-*/
 
-const SYS_CLK_INIT sysClkInit =
-{
-    .moduleInit = {0},
-    .systemClockSource = SYS_CLK_SOURCE,
-    .systemClockFrequencyHz = SYS_CLK_FREQ,
-    .waitTillComplete = true,
-    .secondaryOscKeepEnabled = true,
-    .onWaitInstruction = SYS_CLK_ON_WAIT,
-};
-
+//<editor-fold defaultstate="collapsed" desc="SYS_DEVCON Configuration">
 
 /*** System Device Control Initialization Data ***/
 
@@ -436,13 +350,14 @@ const SYS_DEVCON_INIT sysDevconInit =
 {
     .moduleInit = {0},
 };
-
+// </editor-fold>
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Static Initialization Functions
 // *****************************************************************************
 // *****************************************************************************
+
 
 
 // *****************************************************************************
@@ -465,38 +380,32 @@ const SYS_DEVCON_INIT sysDevconInit =
 void SYS_Initialize ( void* data )
 {
     /* Core Processor Initialization */
-    SYS_CLK_Initialize(&sysClkInit);
+    SYS_CLK_Initialize( NULL );
     sysObj.sysDevcon = SYS_DEVCON_Initialize(SYS_DEVCON_INDEX_0, (SYS_MODULE_INIT*)&sysDevconInit);
-    SYS_DEVCON_PerformanceConfig(SYS_DEVCON_SYSTEM_CLOCK);
+    SYS_DEVCON_PerformanceConfig(SYS_CLK_SystemFrequencyGet());
+    SYS_PORTS_Initialize();
 
     /* Board Support Package Initialization */
     BSP_Initialize();
 
-    /* System Services Initialization */    
-    SYS_INT_Initialize();  
-
     /* Initialize Drivers */
+
     sysObj.drvTmr0 = DRV_TMR_Initialize(DRV_TMR_INDEX_0, (SYS_MODULE_INIT *)&drvTmr0InitData);
 
     SYS_INT_VectorPrioritySet(INT_VECTOR_T1, INT_PRIORITY_LEVEL1);
     SYS_INT_VectorSubprioritySet(INT_VECTOR_T1, INT_SUBPRIORITY_LEVEL0);
  
  
+ 
     /* Initialize System Services */
+    SYS_INT_Initialize();  
 
-/*** TMR Service Initialization Code ***/
-
+    /*** TMR Service Initialization Code ***/
     sysObj.sysTmr  = SYS_TMR_Initialize(SYS_TMR_INDEX_0, (const SYS_MODULE_INIT  * const)&sysTmrInitData);
-
-
-
     SYS_RANDOM_Initialize(0, 0);
 
     /* Initialize Middleware */
 
-    /* MAC Pin Initialize Call */
-    APP_ETHMAC_PinInitialize();
-    
     /* set priority for ETHERNET interrupt source */
     SYS_INT_VectorPrioritySet(INT_VECTOR_ETH, INT_PRIORITY_LEVEL5);
 
@@ -512,12 +421,10 @@ void SYS_Initialize ( void* data )
     {
         return;
     }
-
-    if (!SYS_COMMAND_INIT())
+    if (!SYS_CMD_Initialize())
     {
         return;
     }
-
     /* TCPIP Stack Initialization */
     sysObj.tcpip = TCPIP_STACK_Init();
     if (sysObj.tcpip == SYS_MODULE_OBJ_INVALID)
@@ -525,12 +432,12 @@ void SYS_Initialize ( void* data )
        return;
     }
 
-
     /* Enable Global Interrupts */
     SYS_INT_Enable();
 
     /* Initialize the Application */
     APP_Initialize();
+
 }
 
 /*******************************************************************************

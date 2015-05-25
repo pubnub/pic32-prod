@@ -191,9 +191,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define TCPIP_STACK_TICK_RATE		        		5
 #define TCPIP_STACK_DRAM_TRACE_SLOTS				
 
-#define TCPIP_STACK_USE_SSL_CLIENT
-#include <tcpip/config/ssl_config.h>
-
 
 #define TCPIP_STACK_MALLOC_FUNC		    	malloc
 

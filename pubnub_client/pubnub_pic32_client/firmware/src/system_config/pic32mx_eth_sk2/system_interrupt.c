@@ -65,20 +65,18 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app.h"
 #include "system_definitions.h"
 
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: System Interrupt Vector Functions
 // *****************************************************************************
 // *****************************************************************************
-void __ISR(_TIMER_1_VECTOR, ipl1) _IntHandlerDrvTmrInstance0(void)
+void __ISR(_TIMER_1_VECTOR, ipl1AUTO) _IntHandlerDrvTmrInstance0(void)
 {
+
     DRV_TMR_Tasks_ISR(sysObj.drvTmr0);
+
 }
-  
-
-
-void __ISR(_ETH_VECTOR, ipl5) _InterruptHandler_ETHMAC(void)
+ void __ISR(_ETH_VECTOR, ipl5AUTO) _IntHandler_ETHMAC(void)
 {
     DRV_ETHMAC_Tasks_ISR((SYS_MODULE_OBJ)0);
 }

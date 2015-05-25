@@ -18,7 +18,7 @@
     definitions for build-time configuration options that are not instantiated
     until used by another MPLAB Harmony module or application.
     
-    Created with MPLAB Harmony Version 1.00
+    Created with MPLAB Harmony Version 1.03.01
 *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
@@ -49,6 +49,12 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #ifndef _SYSTEM_CONFIG_H
 #define _SYSTEM_CONFIG_H
 
+/* This is a temporary workaround for an issue with the peripheral library "Exists"
+   functions that causes superfluous warnings.  It "nulls" out the definition of
+   The PLIB function attribute that causes the warning.  Once that issue has been
+   resolved, this definition should be removed. */
+#define _PLIB_UNSUPPORTED
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -66,39 +72,26 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // Section: System Service Configuration
 // *****************************************************************************
 // *****************************************************************************
-
+// *****************************************************************************
+/* Common System Service Configuration Options
+*/
+#define SYS_VERSION_STR           "1.03.01"
+#define SYS_VERSION               10301
 
 // *****************************************************************************
 /* Clock System Service Configuration Options
 */
-
-#define SYS_CLK_SOURCE                      SYS_CLK_SOURCE_PRIMARY
-#define SYS_CLK_FREQ                        200000000ul
+#define SYS_CLK_FREQ                        1666666666ul
+#define SYS_CLK_BUS_PERIPHERAL_1            833333333ul
+#define SYS_CLK_BUS_PERIPHERAL_2            833333333ul
+#define SYS_CLK_BUS_PERIPHERAL_3            833333333ul
+#define SYS_CLK_BUS_PERIPHERAL_4            833333333ul
+#define SYS_CLK_BUS_PERIPHERAL_5            833333333ul
+#define SYS_CLK_BUS_PERIPHERAL_7            1666666666ul
+#define SYS_CLK_BUS_PERIPHERAL_8            833333333ul
 #define SYS_CLK_CONFIG_PRIMARY_XTAL         200000000ul
 #define SYS_CLK_CONFIG_SECONDARY_XTAL       200000000ul
-#define SYS_CLK_CONFIG_SYSPLL_INP_DIVISOR   3
-#define SYS_CLK_CONFIG_FREQ_ERROR_LIMIT     10
-#define SYS_CLK_CONFIGBIT_USBPLL_ENABLE     false
-#define SYS_CLK_CONFIG_USB_CLOCK            24000000ul
-#define SYS_CLK_WAIT_FOR_SWITCH             true
-#define SYS_CLK_KEEP_SECONDARY_OSC_ENABLED  true
-#define SYS_CLK_ON_WAIT                     OSC_ON_WAIT_IDLE
-
- 
-/*** Common System Service Configuration ***/
-
-#define SYS_BUFFER  false
-#define SYS_QUEUE   false
-
-
-// *****************************************************************************
-/* Device Control System Service Configuration Options
-*/
-
-#define SYS_DEVCON_SYSTEM_CLOCK         200000000
-
-
-
+   
 /*** Interrupt System Service Configuration ***/
 
 #define SYS_INT                     true
@@ -107,9 +100,40 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 /*** Ports System Service Configuration ***/
 
 
+#define SYS_PORT_B_ANSEL        0x8fdf
+#define SYS_PORT_B_TRIS         0xffff
+#define SYS_PORT_B_LAT          0x0
+#define SYS_PORT_B_ODC          0x0
+#define SYS_PORT_B_CNPU         0x0
+#define SYS_PORT_B_CNPD         0x0
+#define SYS_PORT_B_CNEN         0x0
+
+#define SYS_PORT_C_ANSEL        0xe01e
+#define SYS_PORT_C_TRIS         0xf01e
+#define SYS_PORT_C_LAT          0x0
+#define SYS_PORT_C_ODC          0x0
+#define SYS_PORT_C_CNPU         0x0
+#define SYS_PORT_C_CNPD         0x0
+#define SYS_PORT_C_CNEN         0x0
+
+#define SYS_PORT_H_ANSEL        0x40
+#define SYS_PORT_H_TRIS         0xffff
+#define SYS_PORT_H_LAT          0x0
+#define SYS_PORT_H_ODC          0x0
+#define SYS_PORT_H_CNPU         0x0
+#define SYS_PORT_H_CNPD         0x0
+#define SYS_PORT_H_CNEN         0x0
+
+#define SYS_PORT_J_ANSEL        0x0
+#define SYS_PORT_J_TRIS         0xffff
+#define SYS_PORT_J_LAT          0x0
+#define SYS_PORT_J_ODC          0x0
+#define SYS_PORT_J_CNPU         0x0
+#define SYS_PORT_J_CNPD         0x0
+#define SYS_PORT_J_CNEN         0x0
+
 
 /*** Timer System Service Configuration ***/
-
 #define SYS_TMR_POWER_STATE             SYS_MODULE_POWER_RUN_FULL
 #define SYS_TMR_DRIVER_INDEX            DRV_TMR_INDEX_0
 #define SYS_TMR_MAX_CLIENT_OBJECTS      5
@@ -118,6 +142,12 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define SYS_TMR_UNIT_RESOLUTION         10000
 #define SYS_TMR_CLIENT_TOLERANCE        10
 #define SYS_TMR_INTERRUPT_NOTIFICATION  false
+ 
+/*** Command Processor System Service Configuration DISABLED ***/
+
+#define SYS_CMD_READY_TO_READ()
+
+
 
 // *****************************************************************************
 /* Random System Service Configuration Options
@@ -132,13 +162,12 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 // *****************************************************************************
 
-
 /*** Timer Driver Configuration ***/
-
 #define DRV_TMR_INSTANCES_NUMBER           1
 #define DRV_TMR_CLIENTS_NUMBER             1
 #define DRV_TMR_INTERRUPT_MODE             true
 
+/*** Timer Driver 0 Configuration ***/
 #define DRV_TMR_PERIPHERAL_ID_IDX0          TMR_ID_1
 #define DRV_TMR_INTERRUPT_SOURCE_IDX0       INT_SOURCE_TIMER_1
 #define DRV_TMR_INTERRUPT_VECTOR_IDX0       INT_VECTOR_T1
@@ -151,16 +180,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define DRV_TMR_ASYNC_WRITE_ENABLE_IDX0     false
 #define DRV_TMR_POWER_STATE_IDX0            SYS_MODULE_POWER_RUN_FULL
 
-
-
-
-
-
-
-
  
- 
-// *****************************************************************************
+ // *****************************************************************************
 // *****************************************************************************
 // Section: Middleware & Other Library Configuration
 // *****************************************************************************
@@ -184,12 +205,10 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define TCPIP_STACK_USE_IPV4
 #define TCPIP_STACK_USE_TCP
 #define TCPIP_STACK_USE_UDP
-#define TCPIP_STACK_USE_ICMP_SERVER
 #define TCPIP_STACK_USE_ICMP_CLIENT
 #define TCPIP_STACK_DRAM_SIZE		        		39250
 #define TCPIP_STACK_DRAM_RUN_LIMIT		    		2048
 #define TCPIP_STACK_TICK_RATE		        		5
-#define TCPIP_STACK_DRAM_TRACE_SLOTS				
 
 #define TCPIP_STACK_MALLOC_FUNC		    	malloc
 
@@ -206,6 +225,7 @@ typedef enum
 {
     SYS_MODULE_UART_1,
     SYS_MODULE_UART_2,
+	SYS_MODULE_UART_3,
 } SYS_MODULE_ID;
 
 #define SYS_CONSOLE_ENABLE					true
@@ -215,6 +235,10 @@ typedef enum
 #define SYS_CONSOLE_BAUDRATE                            	115200
 #define SYS_CONSOLE_BUFFER_LEN                          	64
 #define SYS_DEBUG_BAUDRATE                              	115200
+
+
+/* TCP/IP stack event notification */
+#define TCPIP_STACK_USE_EVENT_NOTIFICATION
 
 
 /*** ARP Configuration ***/
@@ -232,30 +256,32 @@ typedef enum
 
 
 /*** DHCP Configuration ***/
+#define TCPIP_STACK_USE_DHCP_CLIENT
 #define TCPIP_DHCP_TIMEOUT		        		2
 #define TCPIP_DHCP_TASK_TICK_RATE	    			5
 #define TCPIP_DHCP_CLIENT_CONNECT_PORT  			68
 #define TCPIP_DHCP_SERVER_LISTEN_PORT				67
 #define TCPIP_DHCP_CLIENT_ENABLED             			true
-#define TCPIP_STACK_USE_DHCP_CLIENT
+
 
 
 /*** DHCP Server Configuration ***/
 
 
 /*** DNS Client Configuration ***/
+#define TCPIP_STACK_USE_DNS
 #define TCPIP_DNS_CLIENT_SERVER_TMO		    		60
 #define TCPIP_DNS_CLIENT_TASK_PROCESS_RATE		    	200
 #define TCPIP_DNS_CLIENT_CACHE_ENTRIES				5
 #define TCPIP_DNS_CLIENT_CACHE_ENTRY_TMO			0
 #define TCPIP_DNS_CLIENT_CACHE_PER_IPV4_ADDRESS			5
-#define TCPIP_DNS_CLIENT_CACHE_PER_IPV6_ADDRESS	    		
+#define TCPIP_DNS_CLIENT_CACHE_PER_IPV6_ADDRESS	    		1
 #define TCPIP_DNS_CLIENT_OPEN_ADDRESS_TYPE		    	IP_ADDRESS_TYPE_IPV4
 #define TCPIP_DNS_CLIENT_CACHE_DEFAULT_TTL_VAL			1200
 #define TCPIP_DNS_CLIENT_CACHE_UNSOLVED_ENTRY_TMO		10
 #define TCPIP_DNS_CLIENT_MAX_HOSTNAME_LEN			32
 #define TCPIP_DNS_CLIENT_DELETE_OLD_ENTRIES			true
-#define TCPIP_STACK_USE_DNS
+
 
 
 /*** DNS Server Configuration ***/
@@ -276,16 +302,14 @@ typedef enum
 
 
 /*** NBNS Configuration ***/
-#define TCPIP_NBNS_TASK_TICK_RATE    				110
 #define TCPIP_STACK_USE_NBNS
+#define TCPIP_NBNS_TASK_TICK_RATE   110
 
 
 /*** SMTP Configuration ***/
 
 
 /*** SNTP Configuration ***/
-
-
 
 
 
@@ -317,15 +341,27 @@ typedef enum
 /*** TCPIP MAC Configuration ***/
 #define TCPIP_EMAC_TX_DESCRIPTORS				8
 #define TCPIP_EMAC_RX_DESCRIPTORS				6
+#define TCPIP_EMAC_RX_DEDICATED_BUFFERS				4
+#define TCPIP_EMAC_RX_INIT_BUFFERS				    0
+#define TCPIP_EMAC_RX_LOW_THRESHOLD				    1
+#define TCPIP_EMAC_RX_LOW_FILL				        2
 #define TCPIP_EMAC_RX_BUFF_SIZE		    			1536
 #define TCPIP_EMAC_RX_MAX_FRAME		    			1536
 #define TCPIP_EMAC_RX_FRAGMENTS		    			1
-#define TCPIP_EMAC_ETH_OPEN_FLAGS       			0x11f
-#define TCPIP_EMAC_PHY_CONFIG_FLAGS     			0x10
+#define TCPIP_EMAC_ETH_OPEN_FLAGS       			\
+                                                    ETH_OPEN_AUTO |\
+                                                    ETH_OPEN_FDUPLEX |\
+                                                    ETH_OPEN_HDUPLEX |\
+                                                    ETH_OPEN_100 |\
+                                                    ETH_OPEN_10 |\
+                                                    ETH_OPEN_MDIX_AUTO |\
+                                                    0
+#define TCPIP_EMAC_PHY_CONFIG_FLAGS     			\
+                                                    ETH_PHY_CFG_AUTO | \
+                                                    0                                                    
 #define TCPIP_EMAC_PHY_LINK_INIT_DELAY  			500
 #define TCPIP_EMAC_PHY_ADDRESS		    			0
 #define TCPIP_EMAC_INTERRUPT_MODE        			true
-#define TCPIP_STACK_USE_EVENT_NOTIFICATION
 #define DRV_ETHPHY_INSTANCES_NUMBER				1
 #define DRV_ETHPHY_CLIENTS_NUMBER				1
 #define DRV_ETHPHY_INDEX		        		1
@@ -342,7 +378,6 @@ typedef enum
 #define DRV_ETHMAC_POWER_STATE		    			SYS_MODULE_POWER_RUN_FULL
 
 #define DRV_ETHMAC_INTERRUPT_MODE        			true
-#define TCPIP_STACK_USE_EVENT_NOTIFICATION
 
 
 /*** TCP/IP Reboot Configuration ***/
@@ -364,6 +399,19 @@ typedef enum
 #define TCPIP_UDP_USE_RX_CHECKSUM             			true
 
 #define TCPIP_STACK_USE_ZEROCONF_LINK_LOCAL
+#define TCPIP_ZC_LL_PROBE_WAIT 1
+#define TCPIP_ZC_LL_PROBE_MIN 1
+#define TCPIP_ZC_LL_PROBE_MAX 2
+#define TCPIP_ZC_LL_PROBE_NUM 3
+#define TCPIP_ZC_LL_ANNOUNCE_WAIT 2
+#define TCPIP_ZC_LL_ANNOUNCE_NUM 2
+#define TCPIP_ZC_LL_ANNOUNCE_INTERVAL 2
+#define TCPIP_ZC_LL_MAX_CONFLICTS 10
+#define TCPIP_ZC_LL_RATE_LIMIT_INTERVAL 60
+#define TCPIP_ZC_LL_DEFEND_INTERVAL 10
+#define TCPIP_ZC_LL_IPV4_LLBASE 0xa9fe0100
+#define TCPIP_ZC_LL_IPV4_LLBASE_MASK 0x0000FFFF
+#define TCPIP_ZC_LL_TASK_TICK_RATE 333
 
 /*** Network Configuration Index 0 ***/
 #define TCPIP_NETWORK_DEFAULT_INTERFACE_NAME 			"PIC32INT"
@@ -382,18 +430,12 @@ typedef enum
 #define TCPIP_NETWORK_DEFAULT_IPV6_GATEWAY 		        0
 
 /*** tcpip_cmd Configuration ***/
+#define TCPIP_STACK_COMMAND_ENABLE
 #define TCPIP_STACK_COMMANDS_STORAGE_ENABLE             false
 #define TCPIP_STACK_COMMANDS_ICMP_ECHO_REQUESTS         4
 #define TCPIP_STACK_COMMANDS_ICMP_ECHO_REQUEST_DELAY    1000
 #define TCPIP_STACK_COMMANDS_ICMP_ECHO_TIMEOUT          5000
 #define TCPIP_STACK_COMMANDS_WIFI_ENABLE             	false
-#define TCPIP_STACK_COMMAND_ENABLE
-
-#include "system/console/sys_console.h"
-#include "system/debug/sys_debug.h"
-#include "tcpip/src/system/system_command.h"
-#include "tcpip/src/system/system_mapping.h"
-
 
 
 

@@ -2,7 +2,7 @@
   System Definitions
 
   File Name:
-    sys_definitions.h
+    system_definitions.h
 
   Summary:
     MPLAB Harmony project system definitions.
@@ -48,17 +48,25 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include <stddef.h>
+#include "system/common/sys_common.h"
+#include "system/common/sys_module.h"
 #include "system/clk/sys_clk.h"
+#include "framework/system/clk/sys_clk_static.h"
 #include "system/devcon/sys_devcon.h"
 #include "system/int/sys_int.h"
 #include "system/random/sys_random.h"
 #include "system/tmr/sys_tmr.h"
 #include "driver/tmr/drv_tmr.h"
 #include "system/ports/sys_ports.h"
-
-
+#include "system/debug/sys_debug.h"
 #include "tcpip/tcpip.h"
 #include "driver/ethmac/drv_ethmac.h"
+#include "system/console/sys_console.h"
+#include "system/debug/sys_debug.h"
+#include "tcpip/src/system/system_mapping.h"
+#include "tcpip/src/system/system_debug_private.h"
+#include "tcpip/src/system/system_command.h"
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Type Definitions
@@ -85,6 +93,8 @@ typedef struct
     SYS_MODULE_OBJ  sysDevcon;
     SYS_MODULE_OBJ  sysTmr;
     SYS_MODULE_OBJ  drvTmr0;
+
+
     SYS_MODULE_OBJ  tcpip;
 
 } SYSTEM_OBJECTS;

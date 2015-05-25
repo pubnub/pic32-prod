@@ -11,18 +11,39 @@
           <logicalFolder name="pic32mx_eth_sk"
                          displayName="pic32mx_eth_sk"
                          projectFiles="true">
+            <logicalFolder name="framework" displayName="framework" projectFiles="true">
+              <logicalFolder name="system" displayName="system" projectFiles="true">
+                <logicalFolder name="clk" displayName="clk" projectFiles="true">
+                  <itemPath>../src/system_config/pic32mx_eth_sk/framework/system/clk/sys_clk_static.h</itemPath>
+                </logicalFolder>
+              </logicalFolder>
+            </logicalFolder>
             <itemPath>../src/system_config/pic32mx_eth_sk/system_config.h</itemPath>
             <itemPath>../src/system_config/pic32mx_eth_sk/system_definitions.h</itemPath>
           </logicalFolder>
           <logicalFolder name="pic32mx_eth_sk2"
                          displayName="pic32mx_eth_sk2"
                          projectFiles="true">
+            <logicalFolder name="framework" displayName="framework" projectFiles="true">
+              <logicalFolder name="system" displayName="system" projectFiles="true">
+                <logicalFolder name="clk" displayName="clk" projectFiles="true">
+                  <itemPath>../src/system_config/pic32mx_eth_sk2/framework/system/clk/sys_clk_static.h</itemPath>
+                </logicalFolder>
+              </logicalFolder>
+            </logicalFolder>
             <itemPath>../src/system_config/pic32mx_eth_sk2/system_config.h</itemPath>
             <itemPath>../src/system_config/pic32mx_eth_sk2/system_definitions.h</itemPath>
           </logicalFolder>
           <logicalFolder name="pic32mz_ec_sk"
                          displayName="pic32mz_ec_sk"
                          projectFiles="true">
+            <logicalFolder name="framework" displayName="framework" projectFiles="true">
+              <logicalFolder name="system" displayName="system" projectFiles="true">
+                <logicalFolder name="clk" displayName="clk" projectFiles="true">
+                  <itemPath>../src/system_config/pic32mz_ec_sk/framework/system/clk/sys_clk_static.h</itemPath>
+                </logicalFolder>
+              </logicalFolder>
+            </logicalFolder>
             <itemPath>../src/system_config/pic32mz_ec_sk/system_config.h</itemPath>
             <itemPath>../src/system_config/pic32mz_ec_sk/system_definitions.h</itemPath>
           </logicalFolder>
@@ -185,6 +206,20 @@
           <logicalFolder name="pic32mx_eth_sk"
                          displayName="pic32mx_eth_sk"
                          projectFiles="true">
+            <logicalFolder name="framework" displayName="framework" projectFiles="true">
+              <logicalFolder name="system" displayName="system" projectFiles="true">
+                <logicalFolder name="clk" displayName="clk" projectFiles="true">
+                  <logicalFolder name="src" displayName="src" projectFiles="true">
+                    <itemPath>../src/system_config/pic32mx_eth_sk/framework/system/clk/src/sys_clk_static.c</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+                <logicalFolder name="ports" displayName="ports" projectFiles="true">
+                  <logicalFolder name="src" displayName="src" projectFiles="true">
+                    <itemPath>../src/system_config/pic32mx_eth_sk/framework/system/ports/src/sys_ports_static.c</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+              </logicalFolder>
+            </logicalFolder>
             <itemPath>../src/system_config/pic32mx_eth_sk/system_init.c</itemPath>
             <itemPath>../src/system_config/pic32mx_eth_sk/system_tasks.c</itemPath>
             <itemPath>../src/system_config/pic32mx_eth_sk/system_interrupt.c</itemPath>
@@ -192,6 +227,20 @@
           <logicalFolder name="pic32mx_eth_sk2"
                          displayName="pic32mx_eth_sk2"
                          projectFiles="true">
+            <logicalFolder name="framework" displayName="framework" projectFiles="true">
+              <logicalFolder name="system" displayName="system" projectFiles="true">
+                <logicalFolder name="clk" displayName="clk" projectFiles="true">
+                  <logicalFolder name="src" displayName="src" projectFiles="true">
+                    <itemPath>../src/system_config/pic32mx_eth_sk2/framework/system/clk/src/sys_clk_static.c</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+                <logicalFolder name="ports" displayName="ports" projectFiles="true">
+                  <logicalFolder name="src" displayName="src" projectFiles="true">
+                    <itemPath>../src/system_config/pic32mx_eth_sk2/framework/system/ports/src/sys_ports_static.c</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+              </logicalFolder>
+            </logicalFolder>
             <itemPath>../src/system_config/pic32mx_eth_sk2/system_init.c</itemPath>
             <itemPath>../src/system_config/pic32mx_eth_sk2/system_tasks.c</itemPath>
             <itemPath>../src/system_config/pic32mx_eth_sk2/system_interrupt.c</itemPath>
@@ -199,6 +248,20 @@
           <logicalFolder name="pic32mz_ec_sk"
                          displayName="pic32mz_ec_sk"
                          projectFiles="true">
+            <logicalFolder name="framework" displayName="framework" projectFiles="true">
+              <logicalFolder name="system" displayName="system" projectFiles="true">
+                <logicalFolder name="clk" displayName="clk" projectFiles="true">
+                  <logicalFolder name="src" displayName="src" projectFiles="true">
+                    <itemPath>../src/system_config/pic32mz_ec_sk/framework/system/clk/src/sys_clk_static.c</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+                <logicalFolder name="ports" displayName="ports" projectFiles="true">
+                  <logicalFolder name="src" displayName="src" projectFiles="true">
+                    <itemPath>../src/system_config/pic32mz_ec_sk/framework/system/ports/src/sys_ports_static.c</itemPath>
+                  </logicalFolder>
+                </logicalFolder>
+              </logicalFolder>
+            </logicalFolder>
             <itemPath>../src/system_config/pic32mz_ec_sk/system_init.c</itemPath>
             <itemPath>../src/system_config/pic32mz_ec_sk/system_tasks.c</itemPath>
             <itemPath>../src/system_config/pic32mz_ec_sk/system_interrupt.c</itemPath>
@@ -252,13 +315,6 @@
           <itemPath>../../../../../framework/tcpip/src/system/drivers/usart.c</itemPath>
         </logicalFolder>
         <logicalFolder name="system" displayName="system" projectFiles="true">
-          <logicalFolder name="clk" displayName="clk" projectFiles="true">
-            <logicalFolder name="src" displayName="src" projectFiles="true">
-              <itemPath>../../../../../framework/system/clk/src/sys_clk.c</itemPath>
-              <itemPath>../../../../../framework/system/clk/src/sys_clk_pic32mx.c</itemPath>
-              <itemPath>../../../../../framework/system/clk/src/sys_clk_pic32mz.c</itemPath>
-            </logicalFolder>
-          </logicalFolder>
           <logicalFolder name="devcon" displayName="devcon" projectFiles="true">
             <logicalFolder name="src" displayName="src" projectFiles="true">
               <itemPath>../../../../../framework/system/devcon/src/sys_devcon.c</itemPath>
@@ -302,7 +358,6 @@
             <itemPath>../../../../../framework/tcpip/src/common/lfsr.c</itemPath>
           </logicalFolder>
           <logicalFolder name="stack" displayName="stack" projectFiles="true">
-            <itemPath>../../../../../framework/tcpip/src/tcpip_mac_object.c</itemPath>
             <itemPath>../../../../../framework/tcpip/src/tcp.c</itemPath>
             <itemPath>../../../../../framework/tcpip/src/udp.c</itemPath>
             <itemPath>../../../../../framework/tcpip/src/arp.c</itemPath>
@@ -322,9 +377,6 @@
             <itemPath>../../../../../framework/tcpip/src/tcpip_notify.c</itemPath>
             <itemPath>../../../../../framework/tcpip/src/tcpip_packet.c</itemPath>
             <itemPath>../../../../../framework/tcpip/src/ipv4.c</itemPath>
-            <itemPath>../../../../../framework/tcpip/src/ssl.c</itemPath>
-            <itemPath>../../../../../framework/tcpip/src/arcfour.c</itemPath>
-            <itemPath>../../../../../framework/tcpip/src/rsa.c</itemPath>
           </logicalFolder>
           <logicalFolder name="system" displayName="system" projectFiles="true">
             <itemPath>../../../../../framework/tcpip/src/system/system_debug.c</itemPath>
@@ -349,7 +401,6 @@
                          projectFiles="true">
           </logicalFolder>
         </logicalFolder>
-        <itemPath>../src/pubnubDemo.c</itemPath>
         <itemPath>../src/pubnubStaticDemo.c</itemPath>
       </logicalFolder>
     </logicalFolder>
@@ -392,15 +443,14 @@
         <targetDevice>PIC32MZ2048ECH144</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>RealICEPlatformTool</platformTool>
+        <platformTool>PKOBSKDEPlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>1.33</languageToolchainVersion>
+        <languageToolchainVersion>1.34</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
-            <linkerLibFileItem>../../../../../bin/framework/peripheral/PIC32MZ2048ECH144_peripherals.a</linkerLibFileItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../../lib/pubnup_pic32_lib.X"
                             CT="3"
@@ -418,6 +468,7 @@
                             DD="dist/pic32mx_eth_sk2/debug/pubnup_pic32_lib.X.">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibFileItem>../../../../../bin/framework/peripheral/PIC32MZ2048ECH144_peripherals.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
         <archiverTool>
@@ -533,22 +584,6 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="../../../../../framework/system/clk/src/sys_clk_pic32mx.c"
-            ex="true"
-            overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
       <item path="../../../../../framework/system/clk/src/sys_clk_pic32mx.h"
             ex="true"
             overriding="false">
@@ -566,6 +601,54 @@
         </C32Global>
       </item>
       <item path="../../../../../framework/system/devcon/src/sys_devcon_pic32mx.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk/framework/system/clk/src/sys_clk_static.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk/framework/system/clk/sys_clk_static.h"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk/framework/system/ports/src/sys_ports_static.c"
             ex="true"
             overriding="false">
         <C32>
@@ -646,6 +729,54 @@
         </C32Global>
       </item>
       <item path="../src/system_config/pic32mx_eth_sk/system_tasks.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk2/framework/system/clk/src/sys_clk_static.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk2/framework/system/clk/sys_clk_static.h"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk2/framework/system/ports/src/sys_ports_static.c"
             ex="true"
             overriding="false">
         <C32>
@@ -749,7 +880,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/system_config;../src/system_config/pic32mz_ec_sk;../../../../../framework;../../../../../framework/crypto/src;../../../../../framework/crypto;../../../../../framework/driver/tmr;../../../../../framework/driver;../../../../../framework/system/clk;../../../../../framework/system/clk/src;../../../../../framework/system/common;../../../../../framework/system/devcon;../../../../../framework/system/devcon/src;../../../../../framework/system/int;../../../../../framework/system/ports;../../../../../framework/system/random;../../../../../framework/system/reset;../../../../../framework/system/tmr;../../../../../framework/system;../../../../../framework/tcpip;../../../../../framework/tcpip/src;../../../../../framework/driver/ethmac;../../../../../framework/driver/ethmac/src;../../../../../framework/driver/ethmac/src/dynamic;../../../../../framework/driver/ethphy;../../../../../framework/driver/ethphy/src;../../../../../framework/driver/ethphy/src/dynamic;../../../../../framework/tcpip/src/common;../../../../../framework/tcpip/src/system/drivers;../../../../../bsp/pic32mz_ec_sk;../../lib/src/include;../src/include"/>
+                  value="../src;../src/system_config;../src/system_config/pic32mz_ec_sk;../../../../../framework;../../../../../framework/crypto/src;../../../../../framework/crypto;../../../../../framework/driver/tmr;../../../../../framework/driver;../../../../../framework/system/clk;../../../../../framework/system/clk/src;../../../../../framework/system/common;../../../../../framework/system/devcon;../../../../../framework/system/devcon/src;../../../../../framework/system/int;../../../../../framework/system/ports;../../../../../framework/system/random;../../../../../framework/system/reset;../../../../../framework/system/tmr;../../../../../framework/system;../../../../../framework/tcpip;../../../../../framework/tcpip/src;../../../../../framework/driver/ethmac;../../../../../framework/driver/ethmac/src;../../../../../framework/driver/ethmac/src/dynamic;../../../../../framework/driver/ethphy;../../../../../framework/driver/ethphy/src;../../../../../framework/driver/ethphy/src/dynamic;../../../../../framework/tcpip/src/common;../../../../../framework/tcpip/src/system/drivers;../../lib/src/include;../src/include;../../../../../bsp/pic32mz_ec_sk"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -851,6 +982,32 @@
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
+      <PKOBSKDEPlatformTool>
+        <property key="AutoSelectMemRanges" value="auto"/>
+        <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
+        <property key="ToolFirmwareFilePath"
+                  value="Press to browse for a specific firmware version"/>
+        <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
+        <property key="memories.configurationmemory" value="true"/>
+        <property key="memories.dataflash" value="true"/>
+        <property key="memories.eeprom" value="true"/>
+        <property key="memories.id" value="true"/>
+        <property key="memories.programmemory" value="true"/>
+        <property key="memories.programmemory.end" value="0x1d1fffff"/>
+        <property key="memories.programmemory.start" value="0x1d000000"/>
+        <property key="memories.userotp" value="true"/>
+        <property key="poweroptions.powerenable" value="false"/>
+        <property key="programoptions.donoteraseauxmem" value="false"/>
+        <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.preservedataflash" value="false"/>
+        <property key="programoptions.preserveeeprom" value="false"/>
+        <property key="programoptions.preserveprogramrange" value="false"/>
+        <property key="programoptions.preserveprogramrange.end" value="0x1d0007ff"/>
+        <property key="programoptions.preserveprogramrange.start" value="0x1d000000"/>
+        <property key="programoptions.usehighvoltageonmclr" value="false"/>
+        <property key="programoptions.uselvpprogramming" value="false"/>
+        <property key="voltagevalue" value="3.25"/>
+      </PKOBSKDEPlatformTool>
       <RealICEPlatformTool>
         <property key="AutoSelectMemRanges" value="auto"/>
         <property key="CAN1" value="true"/>
@@ -947,16 +1104,17 @@
         <property key="memories.programmemory.partition2.start"
                   value="${memories.programmemory.partition2.start.value}"/>
         <property key="memories.programmemory.start" value="0x1d000000"/>
-        <property key="memories.userotp" value="false"/>
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveprogramrange.end" value="0x1d1fffff"/>
         <property key="programoptions.preserveprogramrange.start" value="0x1d000000"/>
         <property key="programoptions.preserveuserid" value="false"/>
         <property key="programoptions.programcalmem" value="false"/>
+        <property key="programoptions.programuserotp" value="false"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
         <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="tracecontrol.include.timestamp" value="false"/>
@@ -975,15 +1133,14 @@
         <targetDevice>PIC32MX795F512L</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>RealICEPlatformTool</platformTool>
+        <platformTool>PKOBSKDEPlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>1.33</languageToolchainVersion>
+        <languageToolchainVersion>1.34</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
-            <linkerLibFileItem>../../../../../bin/framework/peripheral/PIC32MX795F512L_peripherals.a</linkerLibFileItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../../lib/pubnup_pic32_lib.X"
                             CT="3"
@@ -1001,6 +1158,24 @@
                             DD="dist/pic32mx_eth_sk2/debug/pubnup_pic32_lib.X.">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../lib/pubnup_pic32_lib.X"
+                            CT="3"
+                            CN="pic32mx_eth_sk2"
+                            AC="true"
+                            BL="true"
+                            WD="../../lib/pubnup_pic32_lib.X"
+                            BC="${MAKE}  -f Makefile CONF=pic32mx_eth_sk2"
+                            DBC="${MAKE}  -f Makefile CONF=pic32mx_eth_sk2 TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/pic32mx_eth_sk2&quot; &quot;dist/pic32mx_eth_sk2&quot;"
+                            OP="dist/pic32mx_eth_sk2/production/pubnup_pic32_lib.X.a"
+                            DOP="dist/pic32mx_eth_sk2/debug/pubnup_pic32_lib.X.a"
+                            FL="dist/pic32mx_eth_sk2/production/pubnup_pic32_lib.X.a"
+                            PD="dist/pic32mx_eth_sk2/production/pubnup_pic32_lib.X."
+                            DD="dist/pic32mx_eth_sk2/debug/pubnup_pic32_lib.X.">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibFileItem>../../../../../bin/framework/peripheral/PIC32MX795F512L_peripherals.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
         <archiverTool>
@@ -1116,22 +1291,6 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="../../../../../framework/system/clk/src/sys_clk_pic32mz.c"
-            ex="true"
-            overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
       <item path="../../../../../framework/system/clk/src/sys_clk_pic32mz.h"
             ex="true"
             overriding="false">
@@ -1181,6 +1340,54 @@
         </C32Global>
       </item>
       <item path="../../../../../framework/system/devcon/src/sys_devcon_pic32mz.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk2/framework/system/clk/src/sys_clk_static.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk2/framework/system/clk/sys_clk_static.h"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk2/framework/system/ports/src/sys_ports_static.c"
             ex="true"
             overriding="false">
         <C32>
@@ -1261,6 +1468,54 @@
         </C32Global>
       </item>
       <item path="../src/system_config/pic32mx_eth_sk2/system_tasks.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mz_ec_sk/framework/system/clk/src/sys_clk_static.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mz_ec_sk/framework/system/clk/sys_clk_static.h"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mz_ec_sk/framework/system/ports/src/sys_ports_static.c"
             ex="true"
             overriding="false">
         <C32>
@@ -1364,7 +1619,7 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/system_config;../src/system_config/pic32mx_eth_sk;../../../../../framework;../../../../../framework/crypto/src;../../../../../framework/crypto;../../../../../framework/driver/tmr;../../../../../framework/driver;../../../../../framework/system/clk;../../../../../framework/system/clk/src;../../../../../framework/system/common;../../../../../framework/system/devcon;../../../../../framework/system/devcon/src;../../../../../framework/system/int;../../../../../framework/system/ports;../../../../../framework/system/random;../../../../../framework/system/reset;../../../../../framework/system/tmr;../../../../../framework/system;../../../../../framework/tcpip;../../../../../framework/tcpip/src;../../../../../framework/driver/ethmac;../../../../../framework/driver/ethmac/src;../../../../../framework/driver/ethmac/src/dynamic;../../../../../framework/driver/ethphy;../../../../../framework/driver/ethphy/src;../../../../../framework/driver/ethphy/src/dynamic;../../../../../framework/tcpip/src/common;../../../../../framework/tcpip/src/system/drivers;../../../../../bsp/pic32mx_eth_sk;../../lib/src/include;../src/include"/>
+                  value="../src;../src/system_config;../src/system_config/pic32mx_eth_sk;../../../../../framework;../../../../../framework/crypto/src;../../../../../framework/crypto;../../../../../framework/driver/tmr;../../../../../framework/driver;../../../../../framework/system/clk;../../../../../framework/system/clk/src;../../../../../framework/system/common;../../../../../framework/system/devcon;../../../../../framework/system/devcon/src;../../../../../framework/system/int;../../../../../framework/system/ports;../../../../../framework/system/random;../../../../../framework/system/reset;../../../../../framework/system/tmr;../../../../../framework/system;../../../../../framework/tcpip;../../../../../framework/tcpip/src;../../../../../framework/driver/ethmac;../../../../../framework/driver/ethmac/src;../../../../../framework/driver/ethmac/src/dynamic;../../../../../framework/driver/ethphy;../../../../../framework/driver/ethphy/src;../../../../../framework/driver/ethphy/src/dynamic;../../../../../framework/tcpip/src/common;../../../../../framework/tcpip/src/system/drivers;../../lib/src/include;../src/include;../../../../../bsp/pic32mx_eth_sk"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
@@ -1466,105 +1721,32 @@
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
-      <RealICEPlatformTool>
-        <property key="ADC 1" value="true"/>
+      <PKOBSKDEPlatformTool>
         <property key="AutoSelectMemRanges" value="auto"/>
-        <property key="CAN1" value="true"/>
-        <property key="CAN2" value="true"/>
-        <property key="CHANGE NOTICE" value="true"/>
-        <property key="COMPARATOR" value="true"/>
-        <property key="DMA" value="true"/>
-        <property key="ETHERNET CONTROLLER" value="true"/>
-        <property key="Freeze All Other Peripherals" value="true"/>
-        <property key="I2C1" value="true"/>
-        <property key="I2C2" value="true"/>
-        <property key="I2C3" value="true"/>
-        <property key="I2C4" value="true"/>
-        <property key="I2C5" value="true"/>
-        <property key="INPUT CAPTURE 1" value="true"/>
-        <property key="INPUT CAPTURE 2" value="true"/>
-        <property key="INPUT CAPTURE 3" value="true"/>
-        <property key="INPUT CAPTURE 4" value="true"/>
-        <property key="INPUT CAPTURE 5" value="true"/>
-        <property key="INTERRUPT CONTROL" value="true"/>
-        <property key="OUTPUT COMPARE 1" value="true"/>
-        <property key="OUTPUT COMPARE 2" value="true"/>
-        <property key="OUTPUT COMPARE 3" value="true"/>
-        <property key="OUTPUT COMPARE 4" value="true"/>
-        <property key="OUTPUT COMPARE 5" value="true"/>
-        <property key="PARALLEL MASTER/SLAVE PORT" value="true"/>
-        <property key="REAL TIME CLOCK" value="true"/>
-        <property key="RIExTrigs.Five" value="OFF"/>
-        <property key="RIExTrigs.Four" value="OFF"/>
-        <property key="RIExTrigs.One" value="OFF"/>
-        <property key="RIExTrigs.Seven" value="OFF"/>
-        <property key="RIExTrigs.Six" value="OFF"/>
-        <property key="RIExTrigs.Three" value="OFF"/>
-        <property key="RIExTrigs.Two" value="OFF"/>
-        <property key="RIExTrigs.Zero" value="OFF"/>
-        <property key="SPI 1" value="true"/>
-        <property key="SPI 2" value="true"/>
-        <property key="SPI 3" value="true"/>
-        <property key="SPI 4" value="true"/>
         <property key="SecureSegment.SegmentProgramming" value="FullChipProgramming"/>
-        <property key="TIMER1" value="true"/>
-        <property key="TIMER2" value="true"/>
-        <property key="TIMER3" value="true"/>
-        <property key="TIMER4" value="true"/>
-        <property key="TIMER5" value="true"/>
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
-        <property key="UART1" value="true"/>
-        <property key="UART2" value="true"/>
-        <property key="UART3" value="true"/>
-        <property key="UART4" value="true"/>
-        <property key="UART5" value="true"/>
-        <property key="UART6" value="true"/>
-        <property key="debugoptions.useswbreakpoints" value="false"/>
-        <property key="hwtoolclock.frcindebug" value="false"/>
-        <property key="hwtoolclock.instructionspeed" value="4"/>
-        <property key="hwtoolclock.units" value="mips"/>
-        <property key="memories.aux" value="false"/>
-        <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
-        <property key="memories.configurationmemory2" value="true"/>
         <property key="memories.dataflash" value="true"/>
         <property key="memories.eeprom" value="true"/>
-        <property key="memories.flashdata" value="true"/>
         <property key="memories.id" value="true"/>
         <property key="memories.programmemory" value="true"/>
-        <property key="memories.programmemory.end" value="0x1d1fffff"/>
-        <property key="memories.programmemory.partition2" value="true"/>
-        <property key="memories.programmemory.partition2.end"
-                  value="${memories.programmemory.partition2.end.value}"/>
-        <property key="memories.programmemory.partition2.start"
-                  value="${memories.programmemory.partition2.start.value}"/>
+        <property key="memories.programmemory.end" value="0x1d07ffff"/>
         <property key="memories.programmemory.start" value="0x1d000000"/>
-        <property key="memories.userotp" value="false"/>
+        <property key="memories.userotp" value="true"/>
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
-        <property key="programoptions.preserveprogramrange.end" value="0x1d1fffff"/>
+        <property key="programoptions.preserveprogramrange.end" value="0x1d0001ff"/>
         <property key="programoptions.preserveprogramrange.start" value="0x1d000000"/>
-        <property key="programoptions.preserveuserid" value="false"/>
-        <property key="programoptions.programcalmem" value="false"/>
         <property key="programoptions.usehighvoltageonmclr" value="false"/>
         <property key="programoptions.uselvpprogramming" value="false"/>
-        <property key="tracecontrol.disablemacros" value="false"/>
-        <property key="tracecontrol.functionprofile.summary" value="false"/>
-        <property key="tracecontrol.include.timestamp" value="false"/>
-        <property key="tracecontrol.medium" value="0"/>
-        <property key="tracecontrol.select" value="0"/>
-        <property key="tracecontrol.stallontracebufferfull" value="false"/>
-        <property key="tracecontrol.tracebufmax" value="546000"/>
-        <property key="tracecontrol.tracefile"
-                  value="C:/svn/isprelease/v1_00/software/isp_root/apps/tcpip_mhc/tcpip_tcp_client/firmware/tcpip_tcp_client.X/debug/pic32mz_ec_sk/defmplabxtrace.log"/>
-        <property key="tracecontrol.tracefilemax" value="10000000"/>
         <property key="voltagevalue" value="3.25"/>
-      </RealICEPlatformTool>
+      </PKOBSKDEPlatformTool>
     </conf>
     <conf name="pic32mx_eth_sk2" type="2">
       <toolsSet>
@@ -1574,13 +1756,12 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PKOBSKDEPlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
-        <languageToolchainVersion>1.33</languageToolchainVersion>
+        <languageToolchainVersion>1.34</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
           <linkerLibItems>
-            <linkerLibFileItem>../../../../../bin/framework/peripheral/PIC32MX795F512L_peripherals.a</linkerLibFileItem>
             <linkerLibProjectItem>
               <makeArtifact PL="../../lib/pubnup_pic32_lib.X"
                             CT="3"
@@ -1598,6 +1779,24 @@
                             DD="dist/pic32mx_eth_sk2/debug/pubnup_pic32_lib.X.">
               </makeArtifact>
             </linkerLibProjectItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../lib/pubnup_pic32_lib.X"
+                            CT="3"
+                            CN="pic32mx_eth_sk2"
+                            AC="true"
+                            BL="true"
+                            WD="../../lib/pubnup_pic32_lib.X"
+                            BC="${MAKE}  -f Makefile CONF=pic32mx_eth_sk2"
+                            DBC="${MAKE}  -f Makefile CONF=pic32mx_eth_sk2 TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/pic32mx_eth_sk2&quot; &quot;dist/pic32mx_eth_sk2&quot;"
+                            OP="dist/pic32mx_eth_sk2/production/pubnup_pic32_lib.X.a"
+                            DOP="dist/pic32mx_eth_sk2/debug/pubnup_pic32_lib.X.a"
+                            FL="dist/pic32mx_eth_sk2/production/pubnup_pic32_lib.X.a"
+                            PD="dist/pic32mx_eth_sk2/production/pubnup_pic32_lib.X."
+                            DD="dist/pic32mx_eth_sk2/debug/pubnup_pic32_lib.X.">
+              </makeArtifact>
+            </linkerLibProjectItem>
+            <linkerLibFileItem>../../../../../bin/framework/peripheral/PIC32MX795F512L_peripherals.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
         <archiverTool>
@@ -1713,22 +1912,6 @@
         <C32Global>
         </C32Global>
       </item>
-      <item path="../../../../../framework/system/clk/src/sys_clk_pic32mz.c"
-            ex="true"
-            overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
       <item path="../../../../../framework/system/clk/src/sys_clk_pic32mz.h"
             ex="true"
             overriding="false">
@@ -1778,6 +1961,54 @@
         </C32Global>
       </item>
       <item path="../../../../../framework/system/devcon/src/sys_devcon_pic32mz.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk/framework/system/clk/src/sys_clk_static.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk/framework/system/clk/sys_clk_static.h"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mx_eth_sk/framework/system/ports/src/sys_ports_static.c"
             ex="true"
             overriding="false">
         <C32>
@@ -1858,6 +2089,54 @@
         </C32Global>
       </item>
       <item path="../src/system_config/pic32mx_eth_sk/system_tasks.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mz_ec_sk/framework/system/clk/src/sys_clk_static.c"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mz_ec_sk/framework/system/clk/sys_clk_static.h"
+            ex="true"
+            overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="../src/system_config/pic32mz_ec_sk/framework/system/ports/src/sys_ports_static.c"
             ex="true"
             overriding="false">
         <C32>
@@ -1961,12 +2240,12 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exclude-floating-point" value="false"/>
         <property key="extra-include-directories"
-                  value="../src;../src/system_config;../../../../../framework;../../../../../framework/crypto/src;../../../../../framework/crypto;../../../../../framework/driver/tmr;../../../../../framework/driver;../../../../../framework/system/clk;../../../../../framework/system/clk/src;../../../../../framework/system/common;../../../../../framework/system/devcon;../../../../../framework/system/devcon/src;../../../../../framework/system/int;../../../../../framework/system/ports;../../../../../framework/system/random;../../../../../framework/system/reset;../../../../../framework/system/tmr;../../../../../framework/system;../../../../../framework/tcpip;../../../../../framework/tcpip/src;../../../../../framework/driver/ethmac;../../../../../framework/driver/ethmac/src;../../../../../framework/driver/ethmac/src/dynamic;../../../../../framework/driver/ethphy;../../../../../framework/driver/ethphy/src;../../../../../framework/driver/ethphy/src/dynamic;../../../../../framework/tcpip/src/common;../../../../../framework/tcpip/src/system/drivers;../src/system_config/pic32mx_eth_sk2;../../../../../bsp/pic32mx_eth_sk2;../src/include;../../lib/src/include"/>
+                  value="../src;../src/system_config;../../../../../framework;../../../../../framework/crypto/src;../../../../../framework/crypto;../../../../../framework/driver/tmr;../../../../../framework/driver;../../../../../framework/system/clk;../../../../../framework/system/clk/src;../../../../../framework/system/common;../../../../../framework/system/devcon;../../../../../framework/system/devcon/src;../../../../../framework/system/int;../../../../../framework/system/ports;../../../../../framework/system/random;../../../../../framework/system/reset;../../../../../framework/system/tmr;../../../../../framework/system;../../../../../framework/tcpip;../../../../../framework/tcpip/src;../../../../../framework/driver/ethmac;../../../../../framework/driver/ethmac/src;../../../../../framework/driver/ethmac/src/dynamic;../../../../../framework/driver/ethphy;../../../../../framework/driver/ethphy/src;../../../../../framework/driver/ethphy/src/dynamic;../../../../../framework/tcpip/src/common;../../../../../framework/tcpip/src/system/drivers;../src/system_config/pic32mx_eth_sk2;../src/include;../../lib/src/include;../../../../../bsp/pic32mx_eth_sk2"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="true"/>
         <property key="make-warnings-into-errors" value="false"/>
-        <property key="optimization-level" value=""/>
+        <property key="optimization-level" value="-O1"/>
         <property key="place-data-into-section" value="false"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
@@ -2080,6 +2359,7 @@
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>
+        <property key="programoptions.preservedataflash" value="false"/>
         <property key="programoptions.preserveeeprom" value="false"/>
         <property key="programoptions.preserveprogramrange" value="false"/>
         <property key="programoptions.preserveprogramrange.end" value="0x1d0001ff"/>
