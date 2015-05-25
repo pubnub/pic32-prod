@@ -37,6 +37,24 @@ The `firmware` directory contains a sample project you can load to
 your MPLABX IDE and try it "out of the box".
 
 
+Compatibility
+-------------
+
+The library itself is compatible with all known releases of Harmony
+since v1.0.
+
+The sample project, unfortunately, is not. So, we track the latest
+widely available Harmony release, and the sample project is compatible
+with it, and make a special release for each Harmony release we track.
+
+Of course, this makes it hard to support changes in the library itself
+across Harmony versions, and we don't do that, in general, except for
+serious issues. That is, in general, fixes and new features go into
+the latest version/release. If an issue is critical to you and you use
+and older release, please let us know. We'll also accept valid pull
+requests that back-port issues to older releases.
+
+
 
 Adding PIC32 Harmony library to Your Project
 --------------------------------------------
