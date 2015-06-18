@@ -8,6 +8,10 @@
       <Path>/framework/crypto/src</Path>
     </File>
     <File>
+      <Name>bsp_sys_init.c</Name>
+      <Path>/bsp/pic32mx_eth_sk2</Path>
+    </File>
+    <File>
       <Name>tcpip_manager.c</Name>
       <Path>/framework/tcpip/stack</Path>
     </File>
@@ -36,10 +40,6 @@
       <Path>/framework/tcpip</Path>
     </File>
     <File>
-      <Name>bsp_sys_init.c</Name>
-      <Path>/bsp/pic32mz_ec_sk</Path>
-    </File>
-    <File>
       <Name>drv_extphy_smsc8740.h</Name>
       <Path>/framework/driver/ethphy</Path>
     </File>
@@ -56,19 +56,15 @@
       <Path>/framework/system/devcon/src</Path>
     </File>
     <File>
-      <Name>arc4.c</Name>
-      <Path>/framework/crypto/src</Path>
+      <Name>tcpip_notify.c</Name>
+      <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
       <Name>dhcp.h</Name>
       <Path>/framework/tcpip</Path>
     </File>
     <File>
-      <Name>tcpip_notify.c</Name>
-      <Path>/framework/tcpip/stack</Path>
-    </File>
-    <File>
-      <Name>arc4.h</Name>
+      <Name>arc4.c</Name>
       <Path>/framework/crypto/src</Path>
     </File>
     <File>
@@ -76,16 +72,20 @@
       <Path>/framework/tcpip</Path>
     </File>
     <File>
-      <Name>oahash.c</Name>
-      <Path>/framework/tcpip/stack</Path>
+      <Name>arc4.h</Name>
+      <Path>/framework/crypto/src</Path>
     </File>
     <File>
-      <Name>tcpip_notify.h</Name>
+      <Name>oahash.c</Name>
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
       <Name>tcpip_common_ports.h</Name>
       <Path>/framework/tcpip</Path>
+    </File>
+    <File>
+      <Name>tcpip_notify.h</Name>
+      <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
       <Name>sys_common.h</Name>
@@ -148,10 +148,6 @@
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
-      <Name>bsp_config.h</Name>
-      <Path>/bsp/pic32mz_ec_sk</Path>
-    </File>
-    <File>
       <Name>tcp_private.h</Name>
       <Path>/framework/tcpip/stack</Path>
     </File>
@@ -196,23 +192,27 @@
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
-      <Name>big_int_helper_c32.S</Name>
-      <Path>/framework/tcpip/common</Path>
-    </File>
-    <File>
       <Name>tcpip_packet.c</Name>
       <Path>/framework/tcpip/stack</Path>
+    </File>
+    <File>
+      <Name>big_int_helper_c32.S</Name>
+      <Path>/framework/tcpip/common</Path>
     </File>
     <File>
       <Name>tcp.h</Name>
       <Path>/framework/tcpip</Path>
     </File>
     <File>
+      <Name>tcpip_packet.h</Name>
+      <Path>/framework/tcpip/stack</Path>
+    </File>
+    <File>
       <Name>dhcp_manager.h</Name>
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
-      <Name>tcpip_packet.h</Name>
+      <Name>hash_fnv.h</Name>
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
@@ -220,28 +220,24 @@
       <Path>/framework/system/reset/src</Path>
     </File>
     <File>
-      <Name>hash_fnv.h</Name>
-      <Path>/framework/tcpip/stack</Path>
-    </File>
-    <File>
       <Name>system.h</Name>
       <Path>/framework/system</Path>
-    </File>
-    <File>
-      <Name>zero_conf_link_local.h</Name>
-      <Path>/framework/tcpip</Path>
     </File>
     <File>
       <Name>hash_fnv.c</Name>
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
-      <Name>drv_ethmac.c</Name>
-      <Path>/framework/driver/ethmac</Path>
+      <Name>zero_conf_link_local.h</Name>
+      <Path>/framework/tcpip</Path>
     </File>
     <File>
       <Name>driver.h</Name>
       <Path>/framework/driver</Path>
+    </File>
+    <File>
+      <Name>drv_ethmac.c</Name>
+      <Path>/framework/driver/ethmac</Path>
     </File>
     <File>
       <Name>hashes.h</Name>
@@ -260,11 +256,15 @@
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
-      <Name>dns_manager.h</Name>
-      <Path>/framework/tcpip/stack</Path>
+      <Name>bsp_config.h</Name>
+      <Path>/bsp/pic32mx_eth_sk2</Path>
     </File>
     <File>
       <Name>ipv4_private.h</Name>
+      <Path>/framework/tcpip/stack</Path>
+    </File>
+    <File>
+      <Name>dns_manager.h</Name>
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
@@ -284,20 +284,20 @@
       <Path>/framework/system/random/src</Path>
     </File>
     <File>
-      <Name>tcp_manager.h</Name>
-      <Path>/framework/tcpip/stack</Path>
-    </File>
-    <File>
       <Name>arp.h</Name>
       <Path>/framework/tcpip</Path>
     </File>
     <File>
-      <Name>dhcp.c</Name>
+      <Name>tcp_manager.h</Name>
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
       <Name>lfsr.h</Name>
       <Path>/framework/tcpip/common</Path>
+    </File>
+    <File>
+      <Name>dhcp.c</Name>
+      <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
       <Name>udp_private.h</Name>
@@ -368,12 +368,12 @@
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
-      <Name>big_int.c</Name>
-      <Path>/framework/tcpip/common</Path>
-    </File>
-    <File>
       <Name>ipv4.h</Name>
       <Path>/framework/tcpip</Path>
+    </File>
+    <File>
+      <Name>big_int.c</Name>
+      <Path>/framework/tcpip/common</Path>
     </File>
     <File>
       <Name>big_int.h</Name>
@@ -390,10 +390,6 @@
     <File>
       <Name>drv_ethernet_flags.h</Name>
       <Path>/framework/driver/ethmac</Path>
-    </File>
-    <File>
-      <Name>sys_devcon_pic32mz.c</Name>
-      <Path>/framework/system/devcon/src</Path>
     </File>
     <File>
       <Name>zero_conf_link_local.c</Name>
@@ -436,8 +432,8 @@
       <Path>/framework/tcpip/stack</Path>
     </File>
     <File>
-      <Name>sys_devcon_cache.h</Name>
-      <Path>/framework/system/devcon</Path>
+      <Name>sys_devcon_pic32mx.c</Name>
+      <Path>/framework/system/devcon/src</Path>
     </File>
     <File>
       <Name>drv_tmr.h</Name>
@@ -450,10 +446,6 @@
     <File>
       <Name>usart.c</Name>
       <Path>/framework/driver</Path>
-    </File>
-    <File>
-      <Name>sys_devcon_cache_pic32mz.S</Name>
-      <Path>/framework/system/devcon/src</Path>
     </File>
     <File>
       <Name>tcpip_manager_control.h</Name>
@@ -478,56 +470,56 @@
   </Files>
   <Templates>
     <Template>
-      <Name>sys_clk_static.c</Name>
-      <Path>app/system_config/pic32mz_ec_sk/framework/system/clk/src</Path>
-      <Checksum>5F55A6E768873CA10794AE5244E01C04</Checksum>
-    </Template>
-    <Template>
-      <Name>system_config.h</Name>
-      <Path>app/system_config/pic32mz_ec_sk</Path>
-      <Checksum>682DF0C7FCB953CC925F8D973ACCE312</Checksum>
-    </Template>
-    <Template>
       <Name>main.c</Name>
       <Path>app</Path>
     </Template>
     <Template>
-      <Name>system_init.c</Name>
-      <Path>app/system_config/pic32mz_ec_sk</Path>
-      <Checksum>4EA132E54C7EA202ACB50B1952EAC22F</Checksum>
+      <Name>system_interrupt.c</Name>
+      <Path>app/system_config/pic32mx_eth_sk2</Path>
+      <Checksum>EB43EC2143A7F63E4FFE168EB8D286C8</Checksum>
     </Template>
     <Template>
-      <Name>sys_clk_static.h</Name>
-      <Path>app/system_config/pic32mz_ec_sk/framework/system/clk</Path>
-      <Checksum>999179DADE9ECD59953526F5E9F83ACC</Checksum>
+      <Name>system_init.c</Name>
+      <Path>app/system_config/pic32mx_eth_sk2</Path>
+      <Checksum>53232CAA1AE5E651A3C7E3136A51B239</Checksum>
     </Template>
     <Template>
       <Name>system_definitions.h</Name>
-      <Path>app/system_config/pic32mz_ec_sk</Path>
+      <Path>app/system_config/pic32mx_eth_sk2</Path>
       <Checksum>DFB5F8AB06ABD9F8E87C41C54351C0CD</Checksum>
     </Template>
     <Template>
-      <Name>system_interrupt.c</Name>
-      <Path>app/system_config/pic32mz_ec_sk</Path>
-      <Checksum>D9FCA0F217021D3409592BB0297C354B</Checksum>
+      <Name>sys_ports_static.c</Name>
+      <Path>app/system_config/pic32mx_eth_sk2/framework/system/ports/src</Path>
+      <Checksum>4A5EAC52260282C2561EB94A2C932E64</Checksum>
     </Template>
     <Template>
-      <Name>sys_ports_static.c</Name>
-      <Path>app/system_config/pic32mz_ec_sk/framework/system/ports/src</Path>
-      <Checksum>91AAF4018BB78C6D206A28E0A9CD66BD</Checksum>
+      <Name>sys_clk_static.h</Name>
+      <Path>app/system_config/pic32mx_eth_sk2/framework/system/clk</Path>
+      <Checksum>999179DADE9ECD59953526F5E9F83ACC</Checksum>
     </Template>
     <Template>
       <Name>system_tasks.c</Name>
-      <Path>app/system_config/pic32mz_ec_sk</Path>
+      <Path>app/system_config/pic32mx_eth_sk2</Path>
       <Checksum>0628D8048ABAED3FBB4D54EECE99A324</Checksum>
+    </Template>
+    <Template>
+      <Name>sys_clk_static.c</Name>
+      <Path>app/system_config/pic32mx_eth_sk2/framework/system/clk/src</Path>
+      <Checksum>1B968DA82B5DD869A6119C3B7628D753</Checksum>
+    </Template>
+    <Template>
+      <Name>system_config.h</Name>
+      <Path>app/system_config/pic32mx_eth_sk2</Path>
+      <Checksum>F7C32C16088A9D60BA9692240E745500</Checksum>
     </Template>
   </Templates>
   <CompilerItems>
     <C32>
-      <Include value="../../../../../bsp/pic32mz_ec_sk"/>
+      <Include value="..\..\..\..\..\bsp\pic32mx_eth_sk2"/>
     </C32>
   </CompilerItems>
   <Libraries>
-    <Library value="../../../../../bin/framework/peripheral/PIC32MZ2048ECH144_peripherals.a"/>
+    <Library value="..\..\..\..\..\bin\framework\peripheral\PIC32MX795F512L_peripherals.a"/>
   </Libraries>
 </configuration>
