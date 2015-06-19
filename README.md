@@ -1,5 +1,11 @@
-PubNub PIC32 Library
+PubNub PIC32 Library for Standalone and MPLH
 ====================
+
+### Standalone
+For the standalone library, use master branch
+
+### MPLH
+For MPLab Harmony, use the harmony branch
 
 To add PubNub support to your PIC application that uses the PIC TCP/IP stack:
 
@@ -10,17 +16,20 @@ To add PubNub support to your PIC application that uses the PIC TCP/IP stack:
   * In **Include/TCPIPConfig.h**, find the Application Options section (near
     the top) and at the *end* of this section, add:
 
+```c
 	#define STACK_USE_PUBNUB                        // PubNub client
 
 	#ifdef STACK_USE_PUBNUB
 	#include "pubnubConfig.h"
 	#endif
-
+```
   * (OPTIONAL) In the same file, find the definition of TCPSocketInitializer
     and at the end of the initializer (before the closing bracket), insert
     a line
 
+```c
 	PUBNUB_SOCKET_INITIALIZER
+```	
 
   * (OPTIONAL) If you want SSL support, download CyaSSL, the CyaSSL SDK
     PIC32_cyassl_example and follow the attached MPLABx setup instructions.
@@ -51,30 +60,38 @@ or the PIC32 Ethernet Kit Demo ("PIC32 ESK TCPIP Demo"):
   * At the top of your main file (**MainDemo.c** in Microchip's "Demo App"),
     after the ``#include "TCPIP Stack/TCPIP.h"`` line, add this code:
 
+```c
 	#if defined(STACK_USE_PUBNUB)
 	#include "pubnubDemo.h"
 	#endif
+```	
 
   * To the late initialization stage of your main() function, e.g. after
     the ``StackInit();`` line, add this code:
 
+```c
 	#if defined(STACK_USE_PUBNUB)
 	    PubnubDemoInit();
 	#endif
+```	
 
   * To your main loop, e.g. after the ``StackApplications();`` line, add:
 
+```c
 	#if defined(STACK_USE_PUBNUB)
 	       PubnubDemoProcess();
 	#endif
+```
 
   * Build and upload. If LED 1 or 2 is lit, there was an error. Otherwise,
     use demo/demo keys and watch the hello_world channel - you should see
     a welcome message when the device starts and you can send a message like
 
+```javascript
 	{"led":{"2":1}}
 	{"led":{"1":1}}
 	{"led":{"1":0}}
+```
 
 to turn on the LED 2, then turn on and back off LED 1. Blinking lights!
 
