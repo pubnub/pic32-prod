@@ -17,7 +17,7 @@ By running PubNub on Microchip Technology's MCUs, you can build realtime cloud c
 This demo shows you how to run PubNub on Microchip, in order to facilitate realtime communication between Microchip hardware and any other device, be it mobile or web. This will power IoT, allowing for bi-directional flow of data between different endpoints to and from Microchip hardware. I will show you how to control the LEDs on the [Ethernet starter Kit](http://www.microchip.com/DevelopmentTools/ProductDetails.aspx?PartNO=DM320004) from a PC or mobile device, and to send messages from the chip to any other device as well. 
 
 
-![alt text](/images/democon.png)
+![alt text](../Tutorial/images/democon.png)
 
 1. The Microchip Ethernet starter kit runs PubNub. 
 3. The PubNub code running on the chip enables it to **publish** the sensor reading(for example) in real time to any other chip or device **subscribing** to the same channel as a data stream.
@@ -25,12 +25,6 @@ This demo shows you how to run PubNub on Microchip, in order to facilitate realt
 6. Since the board is also subscribing, you can send control messages to the board from the console as well. 
 7. Using [Project Eon](http://www.pubnub.com/developers/eon/), you can also visualize the data received from the sensor in realtime through graphs and charts. 
 
-
-IMAGE FOR PubNub + MICROCHIP 
-
-
-
-Embed this - http://g.recordit.co/nr3g85PC9O.gif 
 
 
 
@@ -48,7 +42,7 @@ Embed this - http://g.recordit.co/nr3g85PC9O.gif
  - Hardware setup needs to be as follows:
  
  	
-	 ![alt text](/images/hwsetup.jpg)
+	 ![alt text](../Tutorial/images/hwsetup.jpg)
  
 ### Software:
 
@@ -82,14 +76,14 @@ To create a new MPLAB Harmony application with MHC, follow these steps:
  - Start MPLAB X IDE and select Tools -> Plugins.
  - Select the Downloaded tab and click Add Plugins..., and then navigate to the MHC com-microchip-mplab-modules-mhc.nbm plug-in file, which is located in <install-dir>/utilities/mhc, and then click Open.
 
-![alt text](/images/step12.png)
+![alt text](../Tutorial/images/step12.png)
 
  - Ensure that the Install check box for the plug-in is selected and click Install.
 
 
 
 
-![alt text](/images/step1.3.png)
+![alt text](../Tutorial/images/step1.3.png)
 
  - Follow the prompts from the installation and continue until the installation completes. (Do not be concerned if the version you're installing is signed but not trusted, simply click Continue). Once the installation has finished you can close the Plugins dialog.
  
@@ -154,15 +148,15 @@ The **lib** directory contains the Pubnub client Harmony (static) library. The *
 
  	- Right click on the project name - `pubnub_pic32_client`, choose properties. Make sure the options chosen are as shown in the image below.
 
- ![alt text](/images/properties.png)
+ ![alt text](../Tutorial/images/properties.png)
  
  	- In order to receive and send messages through the PubNub network, you will need to set your publish subscribe keys in the program.
  	
- ![alt text](/images/staticparam.png)
+ ![alt text](../Tutorial/images/staticparam.png)
 
  - You should be all set up. Now choose menu Run|Run Project. It will build and then upload the firmware to the board and then reset it (so that FW starts executing). You can monitor this in the "Output" window, below the code editor window.
  
- ![alt text](/images/run.png)
+ ![alt text](../Tutorial/images/run.png)
  
 ####Static vs Dynamic API
 
@@ -178,14 +172,14 @@ In order to see the output of this demo, open the [PubNub Developer Console](htt
 
 **Note:** You will find the channel and pub/sub keys in `pubnubStaticDemo.c` or `pubnubDemo.c` depending on whether you use the static or dynamic version. 
 
-![alt text](/images/parameter.png)
+![alt text](../Tutorial/images/parameter.png)
 
 
 ####PubNub Publish
 
 If all went well, then after a few seconds, you will see constant messages from the MCU. 
 
-![alt text](/images/publish.png)
+![alt text](../Tutorial/images/publish.png)
 
 The MCU publishes messages (purposely set to do every few seconds), which is received by the console. Publish is broadcasting a message onto a specific channel. Options contains channel name, message, and callback values.
 
@@ -214,7 +208,7 @@ This is the board **subscribing** to any other device.
 
 ####Complete Output
 
-![alt text](/images/console.png)
+![alt text](../Tutorial/images/console.png)
 
 As you can see, I have set the channel, pub and sub keys. The messages box shows me the messages I have sent, History gives me the messages sent and received and sent on the `channel` that I have set. Using the message box, I am able to send messages to the MCU to turn on and off the LEDs on the board itself.
 
