@@ -215,6 +215,9 @@ split_array(char *buf, int len)
 void
 pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key)
 {
+    if (NULL == p) {
+        return;
+    }
     p->publish_key = publish_key;
     p->subscribe_key = subscribe_key;
     p->timeout = 10;
@@ -238,6 +241,9 @@ pubnub_init(struct pubnub *p, const char *publish_key, const char *subscribe_key
 void
 pubnub_done(struct pubnub *p)
 {
+    if (NULL == p) {
+        return;
+    }
     if (p->socket != INVALID_SOCKET) {
         TCPIP_TCP_Disconnect(p->socket);
         TCPIP_TCP_Disconnect(p->socket); // we may want to reuse the socket, RST!
@@ -259,6 +265,9 @@ pubnub_done(struct pubnub *p)
 void
 pubnub_set_origin(struct pubnub *p, const char *origin)
 {
+    if (NULL == p) {
+        return;
+    }
     if (PUBNUB_SSL && origin[4] == 's') {
         p->use_ssl = 1;
         strcpy(p->origin, origin + strlen("https://"));
@@ -273,24 +282,36 @@ pubnub_set_origin(struct pubnub *p, const char *origin)
 void
 pubnub_set_timeout(struct pubnub *p, int timeout)
 {
+    if (NULL == p) {
+        return;
+    }
     p->timeout = timeout;
 }
 
 void
 pubnub_set_sub_timeout(struct pubnub *p, int timeout)
 {
+    if (NULL == p) {
+        return;
+    }
     p->sub_timeout = timeout;
 }
 
 void
 pubnub_set_uuid(struct pubnub *p, const char *uuid)
 {
+    if (NULL == p) {
+        return;
+    }
     p->uuid = uuid;
 }
 
 void
 pubnub_set_auth(struct pubnub *p, const char *auth)
 {
+    if (NULL == p) {
+        return;
+    }
     p->auth = auth;
 }
 
@@ -607,6 +628,9 @@ io_error:
 void
 pubnub_update(struct pubnub *p)
 {
+    if (NULL == p) {
+        return;
+    }
     switch (p->state) {
         case PS_IDLE:
             break;
@@ -681,6 +705,9 @@ pubnub_update(struct pubnub *p)
 void
 pubnub_cancel(struct pubnub *p)
 {
+    if (NULL == p) {
+        return;
+    }
     pubnub_callback_and_idle(p, PNR_CANCELLED);
 }
 
@@ -698,6 +725,9 @@ bool
 pubnub_publish(struct pubnub *p, const char *channel, const char *message,
         pubnub_publish_cb cb, void *cb_data)
 {
+    if (NULL == p) {
+        return false;
+    }
     if (p->state != PS_IDLE)
         return false;
     if (p->http_reply)
@@ -849,6 +879,9 @@ bool
 pubnub_subscribe(struct pubnub *p, const char *channel,
         pubnub_subscribe_cb cb, void *cb_data)
 {
+    if (NULL == p) {
+        return false;
+    }
     if (p->state != PS_IDLE)
         return false;
 
@@ -912,6 +945,9 @@ bool
 pubnub_leave(struct pubnub *p, const char *channel,
         pubnub_leave_cb cb, void *cb_data)
 {
+    if (NULL == p) {
+        return false;
+    }
     if (p->state != PS_IDLE)
         return false;
     if (p->http_reply)
